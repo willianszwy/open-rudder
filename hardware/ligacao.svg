@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1440 800" width="1440" xmlns="http://www.w3.org/2000/svg"
+       font-family="ui-monospace, Consolas, monospace">
+    <title>Open Rudder — diagrama de ligação</title>
+
+    <!-- trilhos de força -->
+    <line x1="60" y1="70" x2="940" y2="70" stroke="#d64545" stroke-width="3.5"/>
+    <text x="60" y="58" fill="#d64545" font-size="15" font-weight="700">3V3</text>
+    <line x1="60" y1="742" x2="940" y2="742" stroke="#334155" stroke-width="3.5"/>
+    <text x="60" y="768" fill="#334155" font-size="15" font-weight="700">GND</text>
+
+    <!-- Pro Micro -->
+    <rect x="80" y="250" width="215" height="250" rx="7" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+    <text x="187" y="286" text-anchor="middle" font-size="16" font-weight="700">Pro Micro</text>
+    <text x="187" y="306" text-anchor="middle" font-size="11.5" fill="#64748b">ATmega32U4 · USB HID</text>
+
+    <g font-size="13">
+      <rect x="283" y="337" width="24" height="18" fill="#e0921f"/>
+      <text x="273" y="351" text-anchor="end">2 · SDA</text>
+      <rect x="283" y="377" width="24" height="18" fill="#2f80d6"/>
+      <text x="273" y="391" text-anchor="end">3 · SCL</text>
+      <rect x="68" y="417" width="24" height="18" fill="#334155"/>
+      <text x="103" y="431">GND</text>
+      <rect x="68" y="457" width="24" height="18" fill="#d64545"/>
+      <text x="103" y="471">3V3 *</text>
+    </g>
+    <line x1="187" y1="500" x2="187" y2="516" stroke="#1d2733" stroke-width="2"/>
+    <text x="187" y="533" text-anchor="middle" font-size="11" fill="#64748b">USB para o PC ↓</text>
+
+    <polyline points="68,426 46,426 46,742" fill="none" stroke="#334155" stroke-width="2.5"/>
+    <polyline points="68,466 30,466 30,70"  fill="none" stroke="#d64545" stroke-width="2.5"/>
+
+    <!-- TCA9548A -->
+    <rect x="530" y="215" width="250" height="330" rx="7" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+    <text x="655" y="251" text-anchor="middle" font-size="16" font-weight="700">TCA9548A</text>
+    <text x="655" y="271" text-anchor="middle" font-size="11.5" fill="#64748b">mux I²C 1→8 · 0x70</text>
+
+    <g font-size="13">
+      <rect x="518" y="337" width="24" height="18" fill="#e0921f"/><text x="553" y="351">SDA</text>
+      <rect x="518" y="377" width="24" height="18" fill="#2f80d6"/><text x="553" y="391">SCL</text>
+      <rect x="518" y="417" width="24" height="18" fill="#334155"/><text x="553" y="431">GND</text>
+      <rect x="518" y="457" width="24" height="18" fill="#d64545"/><text x="553" y="471">VIN</text>
+    </g>
+    <g font-size="12.5" fill="#64748b">
+      <text x="655" y="512" text-anchor="middle">A0 · A1 · A2 → GND</text>
+      <text x="655" y="530" text-anchor="middle">(fixa o endereço em 0x70)</text>
+    </g>
+
+    <line x1="307" y1="346" x2="518" y2="346" stroke="#e0921f" stroke-width="2.5"/>
+    <line x1="307" y1="386" x2="518" y2="386" stroke="#2f80d6" stroke-width="2.5"/>
+    <polyline points="518,426 470,426 470,742" fill="none" stroke="#334155" stroke-width="2.5"/>
+    <polyline points="518,466 450,466 450,70"  fill="none" stroke="#d64545" stroke-width="2.5"/>
+
+    <!-- saidas do mux: um par SDA/SCL por canal -->
+    <g font-size="12.5">
+      <rect x="768" y="297" width="24" height="16" fill="#e0921f"/><text x="758" y="309" text-anchor="end">SD0</text>
+      <rect x="768" y="317" width="24" height="16" fill="#2f80d6"/><text x="758" y="329" text-anchor="end">SC0</text>
+      <rect x="768" y="389" width="24" height="16" fill="#e0921f"/><text x="758" y="401" text-anchor="end">SD1</text>
+      <rect x="768" y="409" width="24" height="16" fill="#2f80d6"/><text x="758" y="421" text-anchor="end">SC1</text>
+      <rect x="768" y="481" width="24" height="16" fill="#e0921f"/><text x="758" y="493" text-anchor="end">SD2</text>
+      <rect x="768" y="501" width="24" height="16" fill="#2f80d6"/><text x="758" y="513" text-anchor="end">SC2</text>
+    </g>
+
+    <!-- fios mux -> sensores (canal 1 sai reto; 0 e 2 sobem/descem) -->
+    <polyline points="792,305 880,305 880,205 1000,205" fill="none" stroke="#e0921f" stroke-width="2.5"/>
+    <polyline points="792,325 900,325 900,225 1000,225" fill="none" stroke="#2f80d6" stroke-width="2.5"/>
+    <line x1="792" y1="397" x2="1000" y2="397" stroke="#e0921f" stroke-width="2.5"/>
+    <line x1="792" y1="417" x2="1000" y2="417" stroke="#2f80d6" stroke-width="2.5"/>
+    <polyline points="792,489 880,489 880,589 1000,589" fill="none" stroke="#e0921f" stroke-width="2.5"/>
+    <polyline points="792,509 900,509 900,609 1000,609" fill="none" stroke="#2f80d6" stroke-width="2.5"/>
+
+    <!-- AS5600 -->
+    <g id="s0">
+      <rect x="1000" y="150" width="250" height="150" rx="7" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+      <rect x="988" y="196" width="24" height="18" fill="#e0921f"/>
+      <rect x="988" y="216" width="24" height="18" fill="#2f80d6"/>
+      <text x="1125" y="182" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 0</text>
+      <text x="1125" y="204" text-anchor="middle" font-size="12" fill="#64748b">LEME — eixo Rz</text>
+      <text x="1125" y="226" text-anchor="middle" font-size="11.5" fill="#64748b">no eixo Ø8 da rudder bar</text>
+      <text x="1125" y="272" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="200" x2="1310" y2="200" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1310" y1="200" x2="1310" y2="180" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1298" y1="180" x2="1322" y2="180" stroke="#d64545" stroke-width="3"/>
+      <text x="1310" y="172" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <line x1="1250" y1="250" x2="1310" y2="250" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1310" y1="250" x2="1310" y2="268" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1298" y1="268" x2="1322" y2="268" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1303" y1="273" x2="1317" y2="273" stroke="#334155" stroke-width="2"/>
+      <line x1="1307" y1="278" x2="1313" y2="278" stroke="#334155" stroke-width="2"/>
+      <polyline points="1310,200 1360,200 1360,216" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="216" x2="1374" y2="216" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="224" x2="1374" y2="224" stroke="#1d2733" stroke-width="1.8"/>
+      <polyline points="1360,224 1360,250 1310,250" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <text x="1382" y="224" font-size="11" fill="#64748b">100nF</text>
+      <circle cx="1310" cy="200" r="3" fill="#1d2733"/><circle cx="1310" cy="250" r="3" fill="#1d2733"/>
+    </g>
+
+    <g id="s1">
+      <rect x="1000" y="342" width="250" height="150" rx="7" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+      <rect x="988" y="388" width="24" height="18" fill="#e0921f"/>
+      <rect x="988" y="408" width="24" height="18" fill="#2f80d6"/>
+      <text x="1125" y="374" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 1</text>
+      <text x="1125" y="396" text-anchor="middle" font-size="12" fill="#64748b">FREIO ESQUERDO — eixo X</text>
+      <text x="1125" y="418" text-anchor="middle" font-size="11.5" fill="#64748b">pivô da biqueira esquerda</text>
+      <text x="1125" y="464" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="392" x2="1310" y2="392" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1310" y1="392" x2="1310" y2="372" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1298" y1="372" x2="1322" y2="372" stroke="#d64545" stroke-width="3"/>
+      <text x="1310" y="364" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <line x1="1250" y1="442" x2="1310" y2="442" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1310" y1="442" x2="1310" y2="460" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1298" y1="460" x2="1322" y2="460" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1303" y1="465" x2="1317" y2="465" stroke="#334155" stroke-width="2"/>
+      <line x1="1307" y1="470" x2="1313" y2="470" stroke="#334155" stroke-width="2"/>
+      <polyline points="1310,392 1360,392 1360,408" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="408" x2="1374" y2="408" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="416" x2="1374" y2="416" stroke="#1d2733" stroke-width="1.8"/>
+      <polyline points="1360,416 1360,442 1310,442" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <text x="1382" y="416" font-size="11" fill="#64748b">100nF</text>
+      <circle cx="1310" cy="392" r="3" fill="#1d2733"/><circle cx="1310" cy="442" r="3" fill="#1d2733"/>
+    </g>
+
+    <g id="s2">
+      <rect x="1000" y="534" width="250" height="150" rx="7" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+      <rect x="988" y="580" width="24" height="18" fill="#e0921f"/>
+      <rect x="988" y="600" width="24" height="18" fill="#2f80d6"/>
+      <text x="1125" y="566" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 2</text>
+      <text x="1125" y="588" text-anchor="middle" font-size="12" fill="#64748b">FREIO DIREITO — eixo Y</text>
+      <text x="1125" y="610" text-anchor="middle" font-size="11.5" fill="#64748b">pivô da biqueira direita</text>
+      <text x="1125" y="656" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="584" x2="1310" y2="584" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1310" y1="584" x2="1310" y2="564" stroke="#d64545" stroke-width="2.5"/>
+      <line x1="1298" y1="564" x2="1322" y2="564" stroke="#d64545" stroke-width="3"/>
+      <text x="1310" y="556" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <line x1="1250" y1="634" x2="1310" y2="634" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1310" y1="634" x2="1310" y2="652" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1298" y1="652" x2="1322" y2="652" stroke="#334155" stroke-width="2.5"/>
+      <line x1="1303" y1="657" x2="1317" y2="657" stroke="#334155" stroke-width="2"/>
+      <line x1="1307" y1="662" x2="1313" y2="662" stroke="#334155" stroke-width="2"/>
+      <polyline points="1310,584 1360,584 1360,600" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="600" x2="1374" y2="600" stroke="#1d2733" stroke-width="1.8"/>
+      <line x1="1346" y1="608" x2="1374" y2="608" stroke="#1d2733" stroke-width="1.8"/>
+      <polyline points="1360,608 1360,634 1310,634" fill="none" stroke="#1d2733" stroke-width="1.8"/>
+      <text x="1382" y="608" font-size="11" fill="#64748b">100nF</text>
+      <circle cx="1310" cy="584" r="3" fill="#1d2733"/><circle cx="1310" cy="634" r="3" fill="#1d2733"/>
+    </g>
+
+    <!-- legenda -->
+    <g font-size="12.5">
+      <rect x="80" y="586" width="420" height="128" rx="6" fill="#fbfdff" stroke="#cbd5e1"/>
+      <text x="96" y="608" font-weight="700" font-size="12">LEGENDA</text>
+      <line x1="96" y1="626" x2="126" y2="626" stroke="#d64545" stroke-width="3"/><text x="134" y="630">3,3 V</text>
+      <line x1="96" y1="646" x2="126" y2="646" stroke="#334155" stroke-width="3"/><text x="134" y="650">GND</text>
+      <line x1="250" y1="626" x2="280" y2="626" stroke="#e0921f" stroke-width="3"/><text x="288" y="630">SDA (dados)</text>
+      <line x1="250" y1="646" x2="280" y2="646" stroke="#2f80d6" stroke-width="3"/><text x="288" y="650">SCL (clock)</text>
+      <text x="96" y="674" font-size="11.5" fill="#64748b">Os símbolos 3V3/GND nos sensores ligam nos mesmos</text>
+      <text x="96" y="690" font-size="11.5" fill="#64748b">trilhos — 4 fios por sensor. Cada canal do mux é um</text>
+      <text x="96" y="706" font-size="11.5" fill="#64748b">barramento isolado: os três mantêm o mesmo 0x36.</text>
+    </g>
+  </svg>
