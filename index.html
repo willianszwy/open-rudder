@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Rudder</title>
+<meta name="description" content="Pedal de leme pendular com sensor magnético AS5600 — firmware, calibrador web e esquemas abertos.">
+<style>
+  :root {
+    --bg: #0a0e13; --panel: #121a23; --panel-2: #0f161e; --line: #223040;
+    --text: #dde6ef; --dim: #7f93a8; --accent: #4ec9e8; --ok: #57d38c; --warn: #f0b849;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; max-width: 1080px; padding: 32px 20px 60px;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  header { border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 28px; }
+  h1 { font-size: 22px; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 8px; font-weight: 600; }
+  h1 span { color: var(--accent); }
+  .tagline { color: var(--dim); margin: 0; max-width: 62ch; }
+  .repo { margin-top: 14px; font-size: 13px; font-family: var(--mono); }
+  a { color: var(--accent); }
+
+  h2 { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+       color: var(--dim); margin: 34px 0 14px; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+
+  .card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 11px;
+    padding: 20px 22px; transition: border-color .14s, background .14s;
+  }
+  .card:hover { border-color: var(--accent); background: #16202b; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card h3 .arrow { color: var(--accent); }
+  .card p { margin: 0; color: var(--dim); font-size: 13.5px; }
+  .card .req { margin-top: 12px; font-size: 12px; font-family: var(--mono); color: var(--dim); }
+  .card .req b { color: var(--warn); font-weight: 600; }
+
+  .sheet {
+    background: #fff; border-radius: 11px; padding: 20px; margin-top: 4px;
+    border: 1px solid var(--line);
+  }
+  .sheet img { display: block; width: 100%; height: auto; }
+  .caption { color: var(--dim); font-size: 12.5px; margin-top: 10px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+  td.mono { font-family: var(--mono); color: var(--accent); }
+  .pend { color: var(--warn); font-size: 12.5px; }
+
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
+           color: var(--dim); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Open <span>Rudder</span></h1>
+  <p class="tagline">
+    Pedal de leme <b>pendular</b> para simulação de voo, com sensor magnético sem contato.
+    Um AS5600 lê o ângulo da barra e um Pro Micro publica o resultado como joystick USB HID —
+    sem potenciômetro, sem contato, sem desgaste no caminho do sinal.
+  </p>
+  <p class="repo">→ <a href="https://github.com/willianszwy/open-rudder">github.com/willianszwy/open-rudder</a></p>
+</header>
+
+<div class="cards">
+  <a class="card" href="web/calibrador.html">
+    <h3>Calibrador <span class="arrow">→</span></h3>
+    <p>Conecta na placa pela porta USB, mostra os três eixos ao vivo e grava a
+       calibração na EEPROM. Sem instalar nada.</p>
+    <div class="req">requer <b>Chrome ou Edge</b> · placa conectada</div>
+  </a>
+
+  <a class="card" href="hardware/diagrama.html">
+    <h3>Folhas de montagem <span class="arrow">→</span></h3>
+    <p>Diagrama de ligação e layout da placa perfurada. Imprima: a folha da
+       perfurada sai em tamanho real e serve de gabarito.</p>
+    <div class="req">imprimir a <b>100%</b>, sem ajustar à página</div>
+  </a>
+</div>
+
+<h2>Eixos</h2>
+<table>
+  <tr><th>Eixo HID</th><th>Fonte</th><th>Faixa</th><th>Estado</th></tr>
+  <tr><td class="mono">Rz</td><td>leme</td><td class="mono">−16383 … +16383</td><td>funcionando</td></tr>
+  <tr><td class="mono">X</td><td>freio de biqueira esquerdo</td><td class="mono">0 … 4095</td><td class="pend">mecânica pendente</td></tr>
+  <tr><td class="mono">Y</td><td>freio de biqueira direito</td><td class="mono">0 … 4095</td><td class="pend">mecânica pendente</td></tr>
+</table>
+
+<h2>Esquema elétrico</h2>
+<div class="sheet">
+  <img src="hardware/ligacao.svg" alt="Diagrama de ligação: Pro Micro, TCA9548A e três AS5600">
+</div>
+<p class="caption">
+  O endereço I²C do AS5600 é fixo em 0x36 e não é programável, então os três sensores não
+  coexistem no mesmo barramento — daí o TCA9548A, que isola cada um em seu canal.
+  <b style="color:var(--warn)">O AS5600 é 3,3 V:</b> nada do barramento pode ver 5 V.
+  Notas completas nas <a href="hardware/diagrama.html">folhas de montagem</a>.
+</p>
+
+<footer>
+  Firmware, esquemas e calibrador em
+  <a href="https://github.com/willianszwy/open-rudder">github.com/willianszwy/open-rudder</a>.
+  O calibrador roda inteiro no seu navegador, pela Web Serial API — nada é enviado a lugar nenhum.
+</footer>
+
+</body>
+</html>
