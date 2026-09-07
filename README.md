@@ -7,6 +7,9 @@ O ângulo é lido por um **AS5600** (Hall, 12 bits, absoluto) e um **Pro Micro**
 o resultado como joystick USB HID — sem potenciômetro, sem contato, sem desgaste no
 caminho do sinal.
 
+**→ [Calibrador e esquemas](https://willianszwy.github.io/open-rudder/)** — roda no
+navegador, sem instalar nada.
+
 **Estado:** eixo do leme funcionando. Freios de biqueira implementados no firmware,
 aguardando montagem mecânica.
 
@@ -89,7 +92,7 @@ para `100000` no topo do sketch.
 Sem calibrar, o eixo não significa nada: o AS5600 mede 0–360° absolutos e o centro do
 seu pedal cai num ponto arbitrário desse círculo.
 
-1. Rode `web/servir.bat` (sobe um servidor local e abre o navegador).
+1. Abra **https://willianszwy.github.io/open-rudder/** e clique em *Calibrador*.
 2. **Conectar** e escolha a porta do Arduino.
 3. Leme: Centro → Batente esquerdo → Batente direito. Freios: Repouso → Fundo.
 4. **Gravar na EEPROM**.
@@ -97,8 +100,9 @@ seu pedal cai num ponto arbitrário desse círculo.
 A página mostra os três eixos ao vivo, o status dos ímãs (AGC) e onde o curso útil cai
 no giro completo do sensor. Detalhes em `web/README.md`.
 
-> A Web Serial API só funciona em **Chrome ou Edge** e em contexto seguro — por isso o
-> `servir.bat`, em vez de abrir o HTML direto pelo Explorer.
+> A Web Serial API só funciona em **Chrome ou Edge** e em contexto seguro. O site é
+> HTTPS, então serve; abrir o HTML direto pelo Explorer (`file://`) não. Para rodar
+> offline, use o `web/servir.bat`, que sobe um servidor local.
 
 ## Mecânica
 

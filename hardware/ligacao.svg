@@ -76,7 +76,7 @@
       <rect x="988" y="216" width="24" height="18" fill="#2f80d6"/>
       <text x="1125" y="182" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 0</text>
       <text x="1125" y="204" text-anchor="middle" font-size="12" fill="#64748b">LEME — eixo Rz</text>
-      <text x="1125" y="226" text-anchor="middle" font-size="11.5" fill="#64748b">no eixo Ø8 da rudder bar</text>
+      <text x="1125" y="226" text-anchor="middle" font-size="11.5" fill="#64748b">na ponta da barra, em rolamentos</text>
       <text x="1125" y="272" text-anchor="middle" font-size="12">DIR → GND</text>
 
       <line x1="1250" y1="200" x2="1310" y2="200" stroke="#d64545" stroke-width="2.5"/>

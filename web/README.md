@@ -3,6 +3,14 @@
 Página que conversa com o Pro Micro pela porta serial (Web Serial API) para
 visualizar o eixo e calibrar o pedal sem abrir o Serial Monitor.
 
+## Versão hospedada
+
+**https://willianszwy.github.io/open-rudder/** — o GitHub Pages serve por HTTPS, que é
+contexto seguro, então a Web Serial funciona direto. Não precisa de servidor local.
+
+O `servir.bat` abaixo continua útil só para desenvolver offline ou testar alterações
+antes de commitar.
+
 ## Como usar
 
 1. Grave o sketch `firmware/open_rudder` no Pro Micro.
