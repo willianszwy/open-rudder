@@ -1,147 +1,117 @@
-# Open Rudder — Rudder Pedal Magnético
+# Open Rudder
 
-Pedais de leme com arquitetura de **rudder bar** (barra central, como em aeronaves
-reais) e três inovações que nenhum produto do mercado combina:
+Pedal de leme **pendular** para simulação de voo, com sensor magnético sem contato.
+Eletrônica, firmware e calibrador abertos.
 
-| # | Inovação | O que substitui | Benefício |
-|---|----------|-----------------|-----------|
-| 1 | **Centragem magnética sem contato** (repulsão N-N de ímãs de neodímio) com ajuste 0–100% por um único anel helicoidal | Mola + came (MFG, Virpil, TPR) | Zero desgaste, silêncio total, força ajustável em voo. 0% = modo helicóptero (sem centragem) |
-| 2 | **Amortecimento por correntes de Foucault** (disco de cobre entre ímãs) | Amortecedor hidráulico/atrito | Amortecimento viscoso real, proporcional à velocidade, sem fluido, sem manutenção, ajustável por engajamento |
-| 3 | **Freios de biqueira isométricos** com célula de carga | Potenciômetro + mola no pivô | Você dosa *força*, não curso — como o pedal hidráulico real. Sem desgaste |
+O ângulo é lido por um **AS5600** (Hall, 12 bits, absoluto) e um **Pro Micro** publica
+o resultado como joystick USB HID — sem potenciômetro, sem contato, sem desgaste no
+caminho do sinal.
 
-Sensor de eixo: **AS5600** (Hall magnético, 12 bits, sem contato). Nada no caminho
-do sinal encosta em nada: a vida útil mecânica é limitada só pelos rolamentos 608.
+**Estado:** eixo do leme funcionando. Freios de biqueira implementados no firmware,
+aguardando montagem mecânica.
 
-> Este repositório também traz o **MAGNUS S1** (`magnus_s1.scad`), manche com gimbal
-> magnético que compartilha a mesma física — resumo no fim, ainda com o nome antigo.
+## Eixos
+
+| Eixo HID | Fonte | Faixa | Estado |
+|---|---|---|---|
+| **Rz** | leme | −16383 … +16383 | funcionando |
+| **X** | freio de biqueira esquerdo | 0 … 4095 | firmware pronto, mecânica pendente |
+| **Y** | freio de biqueira direito | 0 … 4095 | firmware pronto, mecânica pendente |
+
+Rz é o eixo que DCS, MSFS e X-Plane reconhecem direto como leme.
 
 ## Arquivos
 
-- `firmware/open_rudder/` — firmware do Pro Micro (leme + 2 freios, USB HID).
-- `web/calibrador.html` — calibrador que fala com a placa por Web Serial.
-- `open_rudder.scad` — CAD paramétrico completo (OpenSCAD).
-  - `part = "assembly"` — montagem; `bar_angle` (-17..17) anima a deflexão;
-    `ring_lift` (0..18) mostra o anel de força subindo; `yoke_engage` (0..1) o amortecedor.
-  - `part = "exploded"` — vista explodida.
-  - `part = "<nome>"` — cada peça imprimível isolada para exportar STL:
-    `lower_block, upper_block, shell_half (x2), force_ring, force_collar,
-    rotor, eddy_hub, eddy_yoke, bar_hub, pedal_post (x2), pedal_plate (x2)`.
+```
+firmware/open_rudder/     firmware principal (leme + 2 freios, USB HID)
+firmware/as5600_angle/    sketch mínimo de diagnóstico do sensor
+web/calibrador.html       calibrador por Web Serial (Chrome/Edge)
+hardware/ligacao.svg      diagrama de ligação
+hardware/perfurada.svg    layout da placa perfurada (imprimível 1:1)
+hardware/diagrama.html    as duas folhas acima, prontas para imprimir
+```
 
-## Como funciona a centragem magnética
+## Eletrônica
 
-O rotor tem 2 ímãs (Ø10×10, N para cima) a 75 mm do eixo, em ±Y. O anel estator
-tem 4 dedos com ímãs idênticos, mesma polaridade, a ±30° de cada ímã do rotor.
-Ímãs paralelos lado a lado com mesma orientação **se repelem**: ao defletir a barra,
-o ímã do rotor se aproxima de um dedo do estator e é empurrado de volta ao centro.
-A força cresce progressivamente com a deflexão (curva exponencial natural dos ímãs
-— parecida com a carga aerodinâmica real do leme).
+O endereço I²C do AS5600 é **fixo em 0x36 e não é programável**, então os três sensores
+não coexistem no mesmo barramento. Por isso o **TCA9548A**: cada sensor fica isolado em
+um canal, e o firmware chaveia entre eles.
 
-O **colar laranja externo** tem 3 rasgos helicoidais: girá-lo 120° levanta o anel
-estator 18 mm, tirando os ímãs do plano do rotor → força de centragem cai
-continuamente de 100% a ~0%. Um único gesto, como focar uma lente.
+![Diagrama de ligação](hardware/ligacao.svg)
 
-## Como funciona o amortecedor eddy
+Detalhes de montagem, capacitores, cabeamento e o layout da placa estão em
+`hardware/diagrama.html` — abra no navegador e imprima: a folha da perfurada sai em
+tamanho real e serve de gabarito.
 
-Um disco de cobre de 2 mm gira com o eixo entre dois ímãs de bloco N52 (20×20×10)
-montados num garfo em C. O movimento induz correntes de Foucault no cobre →
-força contrária **proporcional à velocidade** (amortecimento viscoso ideal).
-Parado, força zero — não adiciona atrito estático. O garfo desliza radialmente:
-mais área de disco entre os ímãs = mais amortecimento.
+> **Atenção à tensão:** o AS5600 é 3,3 V. Se o seu Pro Micro for 5 V, nada do barramento
+> pode ver 5 V — veja a nota 1 do diagrama.
 
-## BOM (estimativa, jul/2026)
+### Lista de material (só a eletrônica)
 
 | Item | Qtd | ~R$ |
 |------|-----|-----|
-| Perfil alumínio 2020 (2×380 + 1×360 + 1×400 mm) | 1,5 m | 90 |
-| Eixo aço retificado Ø8 × 140 mm | 1 | 25 |
-| Rolamento 608ZZ | 2 | 12 |
-| Ímã neodímio N52 Ø10×5 (rotor 4 + estator 8) | 12 | 60 |
-| Ímã bloco N52 20×20×10 (amortecedor) | 2 | 50 |
-| Ímã diametral Ø6×2,5 (sensor) | 1 | 8 |
-| Disco/chapa de cobre Ø120 × 2 mm | 1 | 60 |
-| Célula de carga barra 50 kg (YZC-131/TAL220) | 2 | 40 |
-| Módulo HX711 | 2 | 20 |
-| RP2040-Zero (USB-C, HID nativo) | 1 | 40 |
-| Módulo AS5600 | 1 | 25 |
-| Parafusos M4/M5, porcas T, insertos M4/M5 | — | 90 |
-| Filamento PETG/ASA (~1,2 kg) | — | 90 |
-| Pés de borracha, batentes, cabos | — | 40 |
-| **Total** | | **~R$ 650** |
+| Pro Micro (ATmega32U4, USB HID nativo) | 1 | 35 |
+| Módulo AS5600 | 3 | 75 |
+| Ímã diametral Ø6×2,5 mm | 3 | 24 |
+| Multiplexador I²C TCA9548A | 1 | 12 |
+| Placa perfurada 7×9 cm, conectores, cabo par trançado | — | 25 |
+| **Total** | | **~R$ 170** |
 
-## Impressão
+O ímã tem que ser **diametral** (magnetizado de lado a lado, não axial), centrado no
+eixo, a 0,5–3 mm da face marcada do chip.
 
-- Material: **PETG** (protótipo) ou **ASA/PC-blend** (produto).
-- Estruturais (`lower_block`, `upper_block`, `bar_hub`, `pedal_post`): 5 perímetros,
-  40% gyroid, camada 0,25.
-- `shell_half`, `force_collar`, `force_ring`: 3 perímetros, 20%.
-- `pedal_plate`: 5 perímetros, nervuras já modeladas; imprimir deitada (face do pé na mesa).
-- Insertos de latão M4/M5 a quente em todos os furos de fixação repetitiva.
-- **Ímãs colados com epóxi** nos bolsos (atenção à polaridade: TODOS com N para cima —
-  marque com caneta antes de colar).
+## Firmware
 
-## Eletrônica / Firmware
+Precisa da biblioteca [Joystick](https://github.com/MHeironimus/ArduinoJoystickLibrary)
+(2.1.1+). Placa: Arduino Micro / Leonardo (ou SparkFun Pro Micro, se você tiver o pacote
+instalado).
 
-```
-AS5600 (I2C) ─┐
-HX711 esq ────┼── RP2040-Zero ── USB HID (joystick 3 eixos)
-HX711 dir ────┘
+```bash
+arduino-cli compile --fqbn arduino:avr:micro firmware/open_rudder
+arduino-cli upload -p COM5 --fqbn arduino:avr:micro firmware/open_rudder
 ```
 
-- Firmware sugerido: RP2040 + TinyUSB HID (ou Arduino-Pico + biblioteca Joystick).
-- Eixo do leme: AS5600 (4096 passos em ±17° ≈ resolução efetiva de ~380 passos/grau
-  usando gearing por software; aplicar filtro EMA leve).
-- Freios: HX711 a 80 SPS, tara automática no boot, curva de resposta configurável.
-- Calibração e curvas por utilitário desktop (fase 2 do produto).
+Como funciona:
 
-## Sequência de montagem
+- **Round-robin de 1 kHz** pelos canais do mux — 333 Hz por eixo, de sobra para um pedal.
+- **Calibração por eixo na EEPROM**: zero, batentes, inversão, deadzone e expo.
+- O zero é resolvido em coordenadas relativas com wrap em ±2048, então **o centro pode
+  cair em qualquer ponto do giro** do ímã — não importa como o ímã ficou na montagem.
+- **Filtro EMA** (α = 0,35) mata o jitter de ±1 count sem atraso perceptível.
+- **Sem o TCA9548A ligado**, cai sozinho para o modo de 1 sensor (só o leme) — dá para
+  montar por partes.
 
-1. Base em H: trilhos + travessa com cantoneiras e porcas T.
-2. `lower_block` na travessa (4× M5); AS5600 no nicho, cabo pela janela -Y.
-3. Rolamento inferior no bolso; eixo com ímã diametral na ponta.
-4. `eddy_hub` + disco de cobre no eixo (parafuso M4); garfo `eddy_yoke` na guia.
-5. `rotor` com ímãs colados; conferir polaridade.
-6. `force_ring` (ímãs colados) sobre o rotor; pinos pelos rasgos das `shell_half`;
-   `force_collar` por fora, engatando os pinos nas hélices.
-7. Fechar as duas `shell_half` nos blocos; `upper_block` com rolamento superior.
-8. `bar_hub` no topo do eixo; barra 2020 no berço.
-9. `pedal_post` nas pontas da barra; célula de carga na torre; `pedal_plate` no pivô.
-10. Eletrônica na caixa do trilho; flash do firmware; calibrar.
+Com cabo longo até as biqueiras, se aparecer `sem resposta no eixo`, baixe `I2C_CLOCK`
+para `100000` no topo do sketch.
 
-## Roadmap de produto
+## Calibração
 
-- **v1 (este CAD):** mecânica completa, ajustes manuais.
-- **v1.5:** escala clicada no colar de força (detentes), heel rests ajustáveis,
-  chapa de ancoragem para cadeira.
-- **v2:** motor de passo no colar = perfis de força trocados por software
-  (a arquitetura magnética já é "FFB-ready" sem redesenho).
+Sem calibrar, o eixo não significa nada: o AS5600 mede 0–360° absolutos e o centro do
+seu pedal cai num ponto arbitrário desse círculo.
 
----
+1. Rode `web/servir.bat` (sobe um servidor local e abre o navegador).
+2. **Conectar** e escolha a porta do Arduino.
+3. Leme: Centro → Batente esquerdo → Batente direito. Freios: Repouso → Fundo.
+4. **Gravar na EEPROM**.
 
-# MAGNUS S1 — Manche com Gimbal Magnético
+A página mostra os três eixos ao vivo, o status dos ímãs (AGC) e onde o curso útil cai
+no giro completo do sensor. Detalhes em `web/README.md`.
 
-Gimbal cardan de 2 eixos (anel externo = pitch, bloco interno = roll), tudo em
-rolamentos 608 com eixos de aço 8 mm. Em cada eixo, um **cartucho magnético**:
+> A Web Serial API só funciona em **Chrome ou Edge** e em contexto seguro — por isso o
+> `servir.bat`, em vez de abrir o HTML direto pelo Explorer.
 
-- **Paddle** no eixo com ímã N52 Ø10×10 a 42 mm, flanqueado por 2 ímãs de
-  estator (mesma polaridade) a ±28° → repulsão progressiva, sem mola.
-- **Ajuste por eixo**: o estator desliza axialmente (rodinha lateral na base
-  para pitch; roll interno na v1) → força 0–100% independente por eixo.
-- **Detent central por atração**: par de ímãs Ø5×2 de pólos opostos alinhados
-  no centro — repulsão dá o gradiente, atração dá o centro definido.
-- **Amortecimento eddy**: setor de cobre de 80° por eixo girando na garganta
-  de um garfo com ímãs de bloco — mata a oscilação sem atrito estático.
-- **Sensores**: 2× AS5600 nas pontas OPOSTAS aos cartuchos, arruela de aço
-  como blindagem no meio do eixo. Calibrar zero após a montagem.
+## Mecânica
 
-Curso ±18°/eixo · base 190×190×116 · stick 250 mm · BOM ~R$ 480.
-Eletrônica idêntica ao R1 (RP2040-Zero HID); dá para ligar os dois num só
-RP2040 (4 eixos + freios) ou cada um com o seu.
+*A documentar:* arquitetura pendular, materiais, dimensões, curso e acoplamento do ímã
+ao eixo.
 
-`magnus_s1.scad`: `part = "assembly" | "cutaway"` ou peça para STL
-(`base_shell, top_plate, outer_frame, inner_block, paddle, stator_slider,
-stick, thumbwheel`); `pitch_angle`/`roll_angle` = deflexão;
-`pitch_engage`/`roll_engage` = engajamento dos cartuchos.
+Duas restrições que o sensor impõe ao projeto mecânico:
 
-Ponto de atenção estrutural: o quadro interno concentra toda a alavanca do
-stick — PETG maciço (100% infill) e, na versão produto, é a única peça que
-migraria para alumínio usinado.
+- **Freios:** mire **10–15° de curso** no pivô da biqueira. O AS5600 dá 0,088° por count,
+  então 10° ≈ 115 counts — abaixo disso a dosagem fica granulada.
+- **Leme:** ±17° usam ~9% do giro do sensor, o que dá ~380 counts no curso total.
+  Equivale a um potenciômetro de 9 bits: suficiente, mas é o teto de resolução.
+
+## Licença
+
+*A definir.*
