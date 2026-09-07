@@ -102,15 +102,33 @@ no giro completo do sensor. Detalhes em `web/README.md`.
 
 ## Mecânica
 
-*A documentar:* arquitetura pendular, materiais, dimensões, curso e acoplamento do ímã
-ao eixo.
+Arquitetura **pendular**: a barra do pedal gira sobre rolamentos e o **ímã diametral fica
+na ponta da barra**, coaxial com o eixo de giro. O AS5600 fica fixo de frente para o ímã,
+sem encostar em nada — o sensor não faz parte do caminho mecânico, só olha para ele.
 
-Duas restrições que o sensor impõe ao projeto mecânico:
+O retorno é por **mola**: pisar comprime a mola, que devolve o pedal à posição inicial.
+Enquanto você pisa, o AS5600 vai lendo o ângulo continuamente.
+
+Três consequências práticas disso:
+
+- **A posição de repouso da mola é o zero elétrico.** É ela que você captura no passo
+  *Centro* da calibração. Se a mola ceder com o tempo, basta capturar o Centro de novo e
+  regravar: os batentes são medidos em relação ao zero, então continuam válidos.
+- **Alinhamento manda na linearidade.** O ímã precisa estar centrado no eixo de giro, e o
+  chip centrado no ímã. Descentralização radial distorce o ângulo lido — e distorce de
+  forma que a calibração de pontas não corrige, porque o erro varia ao longo do curso.
+- **Distância ímã–chip entre 0,5 e 3 mm.** Confira pelo AGC no calibrador: perto do meio
+  da escala é o ideal. Muito baixo significa ímã perto demais, sem margem para saturar.
+
+Restrições que o sensor impõe ao projeto mecânico:
 
 - **Freios:** mire **10–15° de curso** no pivô da biqueira. O AS5600 dá 0,088° por count,
   então 10° ≈ 115 counts — abaixo disso a dosagem fica granulada.
-- **Leme:** ±17° usam ~9% do giro do sensor, o que dá ~380 counts no curso total.
-  Equivale a um potenciômetro de 9 bits: suficiente, mas é o teto de resolução.
+- **Leme:** o AS5600 entrega 4096 counts na volta inteira, então o curso útil é a fração
+  do giro que o pedal realmente percorre. Para ±17°, são ~380 counts no curso total —
+  equivalente a um potenciômetro de 9 bits. Suficiente, mas é o teto de resolução.
+
+*A documentar:* curso real em graus, dimensões da barra, rolamentos e a mola de retorno.
 
 ## Licença
 
