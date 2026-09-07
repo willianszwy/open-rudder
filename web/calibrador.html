@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Rudder — Calibrador</title>
+<style>
+  :root {
+    --bg:      #0a0e13;
+    --panel:   #121a23;
+    --panel-2: #0f161e;
+    --line:    #223040;
+    --text:    #dde6ef;
+    --dim:     #7f93a8;
+    --accent:  #4ec9e8;
+    --hot:     #eafcff;
+    --ok:      #57d38c;
+    --warn:    #f0b849;
+    --err:     #ef6060;
+    --mono: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0 auto;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 20px;
+    max-width: 1180px;
+  }
+
+  /* ---------------------------------------------------------------- header */
+  header {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+  }
+  h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: .12em; text-transform: uppercase; }
+  h1 span { color: var(--accent); }
+  .spacer { flex: 1; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 4px 11px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--line);
+    font-size: 12px; color: var(--dim); font-family: var(--mono);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); flex: none; }
+  .pill.on   .dot { background: var(--ok);   box-shadow: 0 0 8px var(--ok); }
+  .pill.warn .dot { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+  .pill.err  .dot { background: var(--err);  box-shadow: 0 0 8px var(--err); }
+  .pill.on { color: var(--text); }
+
+  button {
+    font: inherit; color: var(--text);
+    background: var(--panel); border: 1px solid var(--line);
+    padding: 8px 15px; border-radius: 7px; cursor: pointer;
+    transition: background .12s, border-color .12s;
+  }
+  button:hover:not(:disabled) { background: #1b2735; border-color: #35485e; }
+  button:disabled { opacity: .38; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #06131a; font-weight: 600; }
+  button.primary:hover:not(:disabled) { background: #6ed7f2; border-color: #6ed7f2; }
+  button.danger:hover:not(:disabled) { border-color: var(--err); color: var(--err); }
+
+  /* ----------------------------------------------------------------- grid */
+  .grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 16px;
+  }
+  .panel h2 {
+    font-size: 11px; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--dim); margin: 0 0 14px;
+  }
+
+  /* ------------------------------------------------------------ eixo / bar */
+  .readouts { display: flex; gap: 26px; margin-bottom: 16px; flex-wrap: wrap; }
+  .ro-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .ro-value { font-family: var(--mono); font-size: 26px; font-variant-numeric: tabular-nums; }
+  .ro-value.accent { color: var(--accent); }
+  .ro-unit { font-size: 13px; color: var(--dim); }
+
+  .bar-wrap { position: relative; height: 62px; }
+  .bar {
+    position: absolute; inset: 14px 0 22px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden;
+  }
+  .bar-fill {
+    position: absolute; top: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(78,201,232,.22), rgba(78,201,232,.42));
+    border-left: 1px solid rgba(78,201,232,.5); border-right: 1px solid rgba(78,201,232,.5);
+  }
+  .bar-center { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #3d5468; }
+  .needle {
+    position: absolute; top: -6px; bottom: -6px; width: 3px;
+    background: var(--hot); border-radius: 2px;
+    box-shadow: 0 0 12px rgba(120,220,255,.95), 0 0 3px rgba(255,255,255,.9);
+    transform: translateX(-50%);
+  }
+  .bar-labels {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: space-between;
+    font-size: 10px; letter-spacing: .1em; color: var(--dim); text-transform: uppercase;
+  }
+
+  /* --------------------------------------------------------------- freios */
+  .brakes { display: flex; gap: 26px; }
+  .brake { display: flex; gap: 12px; align-items: flex-end; }
+  .vbar {
+    position: relative; width: 46px; height: 150px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden;
+  }
+  .vbar-fill {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+    background: linear-gradient(0deg, rgba(78,201,232,.5), rgba(78,201,232,.22));
+    border-top: 2px solid var(--hot);
+  }
+  .vbar-dz {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, #1c2735 0 4px, #16202b 4px 8px);
+    border-top: 1px dashed #3d5468;
+  }
+  .brake-meta { padding-bottom: 2px; }
+  .brake-name { font-size: 12px; margin-bottom: 4px; }
+  .brake-pct { font-family: var(--mono); font-size: 22px; color: var(--accent); }
+  .brake-sub { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+  /* ----------------------------------------------------------------- tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .tab {
+    flex: 1; padding: 7px 4px; font-size: 12px; text-align: center;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 7px; cursor: pointer; color: var(--dim);
+  }
+  .tab:hover { color: var(--text); }
+  .tab.sel { background: #1b2735; border-color: var(--accent); color: var(--text); }
+
+  /* ------------------------------------------------------------- wizard */
+  .step { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--panel-2); }
+  .step:last-of-type { border-bottom: none; }
+  .step-num {
+    width: 22px; height: 22px; flex: none; border-radius: 50%;
+    background: var(--panel-2); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+  }
+  .step.done .step-num { background: var(--ok); border-color: var(--ok); color: #06170e; }
+  .step-body { flex: 1; min-width: 0; }
+  .step-title { font-size: 13px; }
+  .step-hint { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+  .step button { padding: 6px 12px; font-size: 12px; }
+
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .dirty { font-size: 11px; color: var(--warn); font-family: var(--mono); }
+
+  /* ------------------------------------------------------------- sliders */
+  .ctrl { margin-bottom: 16px; }
+  .ctrl-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .ctrl-head label { font-size: 12px; }
+  .ctrl-head output { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+  .ctrl-hint { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); background: transparent; margin: 0; }
+  .curve-row { display: flex; gap: 16px; align-items: center; }
+
+  /* ------------------------------------------------------------- sensores */
+  table.sensors { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.sensors td { padding: 6px 0; border-bottom: 1px solid var(--panel-2); vertical-align: middle; }
+  table.sensors tr:last-child td { border-bottom: none; }
+  td.agc { width: 96px; }
+  .agc-track { height: 5px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+  .agc-fill { height: 100%; background: var(--accent); width: 0; }
+  .agc-num { font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
+
+  /* ----------------------------------------------------------------- log */
+  #log {
+    font-family: var(--mono); font-size: 11.5px; height: 132px; overflow-y: auto;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 7px; padding: 9px 11px;
+    white-space: pre-wrap; word-break: break-word; color: var(--dim);
+  }
+  #log .ok   { color: var(--ok); }
+  #log .err  { color: var(--err); }
+  #log .warn { color: var(--warn); }
+
+  .notice {
+    background: #2a1d10; border: 1px solid #5a3c14; color: var(--warn);
+    padding: 13px 16px; border-radius: 9px; margin-bottom: 16px; font-size: 13px;
+  }
+  .notice code { background: rgba(0,0,0,.3); padding: 1px 5px; border-radius: 4px; }
+  .hidden { display: none !important; }
+
+  .dial-wrap { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .dial-legend { font-size: 11.5px; color: var(--dim); line-height: 1.9; }
+  .key { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>OPEN <span>RUDDER</span> · Calibrador</h1>
+  <div class="spacer"></div>
+  <div class="pill" id="muxPill"><span class="dot"></span><span id="muxText">—</span></div>
+  <div class="pill" id="statusPill"><span class="dot"></span><span id="statusText">desconectado</span></div>
+  <button class="primary" id="btnConnect">Conectar</button>
+  <button id="btnDisconnect" disabled>Desconectar</button>
+</header>
+
+<div class="notice hidden" id="unsupported">
+  Este navegador não tem <strong>Web Serial</strong>. Use Chrome ou Edge (desktop).
+  Se você abriu o arquivo direto pelo Explorer (<code>file://</code>), rode
+  <code>servir.bat</code> nesta pasta e acesse <code>http://localhost:8000/calibrador.html</code> —
+  a API de porta serial só funciona em <code>localhost</code> ou HTTPS.
+</div>
+
+<div class="grid">
+  <!-- ====================================================== coluna esquerda -->
+  <div>
+    <div class="panel">
+      <h2>Eixo do leme · Rz</h2>
+      <div class="readouts">
+        <div>
+          <div class="ro-label">Deflexão</div>
+          <div class="ro-value accent"><span id="roDeg">—</span><span class="ro-unit">°</span></div>
+        </div>
+        <div>
+          <div class="ro-label">Saída</div>
+          <div class="ro-value"><span id="roPct">—</span><span class="ro-unit">%</span></div>
+        </div>
+        <div>
+          <div class="ro-label">Eixo HID</div>
+          <div class="ro-value" style="font-size:20px"><span id="roAxis">—</span></div>
+        </div>
+        <div>
+          <div class="ro-label">Bruto</div>
+          <div class="ro-value" style="font-size:20px"><span id="roRaw">—</span><span class="ro-unit">/4095</span></div>
+        </div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar">
+          <div class="bar-fill" id="barFill"></div>
+          <div class="bar-center"></div>
+          <div class="needle" id="needle" style="left:50%"></div>
+        </div>
+        <div class="bar-labels"><span>◀ esquerda</span><span>centro</span><span>direita ▶</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Freios de biqueira · X / Y</h2>
+      <div class="brakes">
+        <div class="brake">
+          <div class="vbar"><div class="vbar-dz" id="dz1"></div><div class="vbar-fill" id="vf1"></div></div>
+          <div class="brake-meta">
+            <div class="brake-name">Esquerdo</div>
+            <div class="brake-pct"><span id="bp1">—</span>%</div>
+            <div class="brake-sub"><span id="bd1">—</span>° · <span id="bv1">—</span></div>
+          </div>
+        </div>
+        <div class="brake">
+          <div class="vbar"><div class="vbar-dz" id="dz2"></div><div class="vbar-fill" id="vf2"></div></div>
+          <div class="brake-meta">
+            <div class="brake-name">Direito</div>
+            <div class="brake-pct"><span id="bp2">—</span>%</div>
+            <div class="brake-sub"><span id="bd2">—</span>° · <span id="bv2">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ctrl-hint" style="margin-top:12px">
+        A faixa hachurada é a deadzone de repouso. Com os pés fora dos pedais as duas
+        barras têm que ficar em 0% — freio arrastando não dá erro, só te impede de decolar.
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Posição no giro do ímã · <span id="dialAxisName" style="color:var(--accent)">leme</span></h2>
+      <div class="dial-wrap">
+        <svg id="dial" width="230" height="230" viewBox="0 0 230 230">
+          <circle cx="115" cy="115" r="92" fill="none" stroke="#1c2836" stroke-width="14"/>
+          <path id="dialArc" fill="none" stroke="#4ec9e8" stroke-opacity=".35" stroke-width="14"/>
+          <line id="dialCenter" x1="115" y1="15" x2="115" y2="41" stroke="#57d38c" stroke-width="2.5"/>
+          <line id="dialNeedle" x1="115" y1="115" x2="115" y2="31" stroke="#eafcff" stroke-width="2.5"/>
+          <circle cx="115" cy="115" r="4" fill="#4ec9e8"/>
+        </svg>
+        <div class="dial-legend">
+          <div><span class="key" style="background:#57d38c"></span>zero gravado</div>
+          <div><span class="key" style="background:rgba(78,201,232,.45)"></span>curso útil</div>
+          <div><span class="key" style="background:#eafcff"></span>posição atual</div>
+          <div style="margin-top:10px">posição: <span id="dialText" style="color:var(--text);font-family:var(--mono)">—</span></div>
+          <div>curso útil: <span id="travelDeg" style="color:var(--text)">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Mensagens do firmware</h2>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <!-- ======================================================= coluna direita -->
+  <div>
+    <div class="panel">
+      <h2>Calibração</h2>
+      <div class="tabs" id="tabs">
+        <div class="tab sel" data-axis="0">Leme</div>
+        <div class="tab" data-axis="1">Freio esq</div>
+        <div class="tab" data-axis="2">Freio dir</div>
+      </div>
+
+      <div id="steps"></div>
+
+      <div class="row">
+        <button class="primary" id="btnSave" disabled>Gravar na EEPROM</button>
+        <button id="btnInvert" disabled>Inverter</button>
+      </div>
+      <div class="row"><span class="dirty hidden" id="dirtyFlag">alterações não gravadas</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Ajuste de resposta · <span id="respAxisName" style="color:var(--accent)">leme</span></h2>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="dz">Deadzone</label><output id="dzOut">—</output></div>
+        <input type="range" id="dz" min="0" max="16" step="1" value="0" disabled>
+        <div class="ctrl-hint" id="dzHint">counts ignorados no zero.</div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><label for="expo">Expo</label><output id="expoOut">—</output></div>
+        <div class="curve-row">
+          <div style="flex:1">
+            <input type="range" id="expo" min="0" max="60" step="5" value="0" disabled>
+            <div class="ctrl-hint">suaviza o início do curso sem perder o fim.</div>
+          </div>
+          <svg width="86" height="86" viewBox="0 0 86 86" style="flex:none">
+            <rect x="1" y="1" width="84" height="84" rx="5" fill="#0f161e" stroke="#223040"/>
+            <line id="curveVx" x1="43" y1="1" x2="43" y2="85" stroke="#223040"/>
+            <line id="curveVy" x1="1" y1="43" x2="85" y2="43" stroke="#223040"/>
+            <path id="curvePath" fill="none" stroke="#4ec9e8" stroke-width="2"/>
+            <circle id="curveDot" cx="43" cy="43" r="3" fill="#f0b849"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Sensores</h2>
+      <table class="sensors">
+        <tr>
+          <td>Leme</td>
+          <td><span class="pill" id="magPill0"><span class="dot"></span><span id="magText0">—</span></span></td>
+          <td class="agc"><div class="agc-track"><div class="agc-fill" id="agcFill0"></div></div>
+              <div class="agc-num">AGC <span id="agcVal0">—</span></div></td>
+        </tr>
+        <tr>
+          <td>Freio esq</td>
+          <td><span class="pill" id="magPill1"><span class="dot"></span><span id="magText1">—</span></span></td>
+          <td class="agc"><div class="agc-track"><div class="agc-fill" id="agcFill1"></div></div>
+              <div class="agc-num">AGC <span id="agcVal1">—</span></div></td>
+        </tr>
+        <tr>
+          <td>Freio dir</td>
+          <td><span class="pill" id="magPill2"><span class="dot"></span><span id="magText2">—</span></span></td>
+          <td class="agc"><div class="agc-track"><div class="agc-fill" id="agcFill2"></div></div>
+              <div class="agc-num">AGC <span id="agcVal2">—</span></div></td>
+        </tr>
+      </table>
+      <div class="ctrl-hint" style="margin-top:10px">AGC ideal perto do meio da escala.
+        Muito baixo = ímã perto demais; muito alto = longe demais.</div>
+      <div class="row">
+        <button id="btnStatus" disabled>Status detalhado</button>
+        <button class="danger" id="btnErase" disabled>Restaurar padrão</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ------------------------------------------------------------------ modelo
+const COUNTS = 4096;
+const RUDDER_RANGE = 16383;
+const BRAKE_RANGE  = 4095;
+
+// Precisam bater com os padroes do firmware, so para marcar o passo como feito.
+const DEF = [
+  { rest: 0, min: -194, max: 194 },
+  { rest: 0, min: 0,    max: 170 },
+  { rest: 0, min: 0,    max: 170 },
+];
+
+const AXES = [
+  { name: "leme",      kind: "rudder", range: RUDDER_RANGE },
+  { name: "freio esq", kind: "brake",  range: BRAKE_RANGE  },
+  { name: "freio dir", kind: "brake",  range: BRAKE_RANGE  },
+];
+
+let cfg  = AXES.map((_, i) => ({ rest: DEF[i].rest, min: DEF[i].min, max: DEF[i].max, invert: 0, dz: 0, expo: 0 }));
+let live = AXES.map(() => ({ raw: 0, rel: 0, val: 0, mag: -1, agc: 0 }));
+let fresh = false;
+let sel = 0;                 // eixo selecionado nas abas
+let dirty = false;
+
+let port = null, reader = null, writer = null, closedPromise = null;
+let rxBuffer = "";
+
+const $ = id => document.getElementById(id);
+const isRudder = a => AXES[a].kind === "rudder";
+const degOf = counts => counts * 360 / COUNTS;
+
+// -------------------------------------------------------------------- log
+function log(msg, cls) {
+  const el = $("log");
+  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
+  const line = document.createElement("div");
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  el.appendChild(line);
+  while (el.childElementCount > 200) el.removeChild(el.firstChild);
+  if (atBottom) el.scrollTop = el.scrollHeight;
+}
+
+// ---------------------------------------------------------------- conexao
+async function connect() {
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    await port.setSignals({ dataTerminalReady: true, requestToSend: true });
+
+    const decoder = new TextDecoderStream();
+    closedPromise = port.readable.pipeTo(decoder.writable).catch(() => {});
+    reader = decoder.readable.getReader();
+    writer = port.writable.getWriter();
+
+    setConnected(true);
+    log("conectado", "ok");
+
+    await send(">");   // liga a telemetria (o firmware responde com as 3 linhas C)
+    await send("?");   // e o resumo legivel, incluindo a deteccao do mux
+
+    readLoop();
+  } catch (err) {
+    if (err && err.name === "NotFoundError") return;   // usuario cancelou
+    log("falha ao conectar: " + err, "err");
+    await disconnect();
+  }
+}
+
+async function readLoop() {
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      rxBuffer += value;
+      let nl;
+      while ((nl = rxBuffer.indexOf("\n")) >= 0) {
+        handleLine(rxBuffer.slice(0, nl).trim());
+        rxBuffer = rxBuffer.slice(nl + 1);
+      }
+      if (rxBuffer.length > 4096) rxBuffer = "";
+    }
+  } catch (err) {
+    log("leitura interrompida: " + err, "err");
+  }
+  await disconnect();
+}
+
+async function disconnect() {
+  if (writer) { try { await send("<"); } catch (_) {} }
+  try { if (reader) await reader.cancel(); } catch (_) {}
+  try { if (closedPromise) await closedPromise; } catch (_) {}
+  try { if (writer) writer.releaseLock(); } catch (_) {}
+  try { if (port) await port.close(); } catch (_) {}
+  port = reader = writer = closedPromise = null;
+  rxBuffer = "";
+  setConnected(false);
+}
+
+const encoder = new TextEncoder();
+async function send(cmd) {
+  if (!writer) return;
+  await writer.write(encoder.encode(cmd + "\n"));
+}
+// Comando de eixo: prefixo com o numero do eixo ("1r", "0x30", ...)
+const sendAxis = (a, cmd) => send(String(a) + cmd);
+
+// ------------------------------------------------------------- protocolo
+function handleLine(line) {
+  if (!line) return;
+
+  if (line.startsWith("D,")) {
+    const p = line.slice(2).split(",");
+    if (p.length < 6) return;
+    const a = +p[0];
+    if (!(a >= 0 && a < AXES.length)) return;
+    live[a] = { raw: +p[1], rel: +p[2], val: +p[3], mag: +p[4], agc: +p[5] };
+    fresh = true;
+    return;
+  }
+
+  if (line.startsWith("C,")) {
+    const p = line.slice(2).split(",");
+    if (p.length < 7) return;
+    const a = +p[0];
+    if (!(a >= 0 && a < AXES.length)) return;
+    cfg[a] = { rest: +p[1], min: +p[2], max: +p[3], invert: +p[4], dz: +p[5], expo: +p[6] };
+    renderConfig();
+    return;
+  }
+
+  if (line.startsWith("mux:")) {
+    const has = !line.includes("ausente");
+    $("muxPill").className = "pill " + (has ? "on" : "warn");
+    $("muxText").textContent = has ? "mux 0x70" : "sem mux · 1 eixo";
+  }
+
+  const cls = line.startsWith("!!") || line.startsWith("ERRO") ? "err"
+            : line.startsWith(">>") ? "ok" : "";
+  log(line, cls);
+}
+
+// -------------------------------------------------------------------- UI
+function setConnected(on) {
+  $("btnConnect").disabled = on;
+  $("btnDisconnect").disabled = !on;
+  ["btnSave", "btnInvert", "btnStatus", "btnErase", "dz", "expo"].forEach(id => $(id).disabled = !on);
+  document.querySelectorAll("#steps button").forEach(b => b.disabled = !on);
+
+  $("statusPill").className = "pill" + (on ? " on" : "");
+  $("statusText").textContent = on ? "conectado · 115200" : "desconectado";
+
+  if (!on) {
+    setDirty(false);
+    $("muxPill").className = "pill";
+    $("muxText").textContent = "—";
+    for (let a = 0; a < AXES.length; a++) {
+      $("magPill" + a).className = "pill";
+      $("magText" + a).textContent = "—";
+    }
+  }
+}
+
+function setDirty(v) {
+  dirty = v;
+  $("dirtyFlag").classList.toggle("hidden", !v);
+}
+
+// Os passos mudam com o tipo do eixo: leme tem centro + 2 batentes,
+// freio tem so repouso + fundo (o sentido e deduzido na captura).
+function renderSteps() {
+  const c = cfg[sel];
+  const steps = isRudder(sel)
+    ? [
+        { cmd: "c", title: "Centro",           hint: "solte os pedais",        val: "raw " + c.rest,
+          done: c.rest !== DEF[sel].rest },
+        { cmd: "l", title: "Batente esquerdo", hint: "pise a fundo à esquerda", val: c.min + " (" + degOf(c.min).toFixed(1) + "°)",
+          done: c.min !== DEF[sel].min },
+        { cmd: "r", title: "Batente direito",  hint: "pise a fundo à direita",  val: "+" + c.max + " (" + degOf(c.max).toFixed(1) + "°)",
+          done: c.max !== DEF[sel].max },
+      ]
+    : [
+        { cmd: "c", title: "Repouso", hint: "pé fora do pedal",   val: "raw " + c.rest,
+          done: c.rest !== DEF[sel].rest },
+        { cmd: "r", title: "Fundo",   hint: "freio pressionado a fundo", val: c.max + " counts (" + degOf(c.max).toFixed(1) + "°)",
+          done: c.max !== DEF[sel].max },
+      ];
+
+  $("steps").innerHTML = steps.map((s, i) => `
+    <div class="step${s.done ? " done" : ""}">
+      <div class="step-num">${i + 1}</div>
+      <div class="step-body">
+        <div class="step-title">${s.title}</div>
+        <div class="step-hint">${s.hint} · ${s.val}</div>
+      </div>
+      <button data-cmd="${s.cmd}"${port ? "" : " disabled"}>Capturar</button>
+    </div>`).join("");
+
+  $("steps").querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", async () => {
+      await sendAxis(sel, b.dataset.cmd);
+      setDirty(true);
+    });
+  });
+}
+
+function renderConfig() {
+  renderSteps();
+
+  const c = cfg[sel];
+  $("respAxisName").textContent = AXES[sel].name;
+  $("dialAxisName").textContent = AXES[sel].name;
+
+  const travel = c.max - (isRudder(sel) ? c.min : 0);
+  $("travelDeg").textContent = degOf(travel).toFixed(1) + "°";
+
+  if (document.activeElement !== $("dz"))   $("dz").value = Math.min(c.dz, 16);
+  if (document.activeElement !== $("expo")) $("expo").value = Math.min(c.expo, 60);
+  $("dzOut").textContent = c.dz + " counts";
+  $("expoOut").textContent = c.expo + "%";
+  $("dzHint").textContent = isRudder(sel)
+    ? "counts ignorados no centro. Deixe em 0 se o centro não tremer."
+    : "counts ignorados no repouso. Não deixe em 0: qualquer drift vira freio arrastando.";
+
+  // deadzone desenhada na barra do freio correspondente
+  for (const a of [1, 2]) {
+    const span = cfg[a].max || 1;
+    $("dz" + a).style.height = Math.min(100, cfg[a].dz / span * 100).toFixed(1) + "%";
+  }
+
+  drawCurve();
+  drawDialStatic();
+}
+
+// ------------------------------------------------------------ desenho SVG
+function dialPoint(raw, radius) {
+  const a = (raw / COUNTS) * Math.PI * 2;
+  return [115 + radius * Math.sin(a), 115 - radius * Math.cos(a)];
+}
+
+function drawDialStatic() {
+  const c = cfg[sel];
+  const [cx, cy] = dialPoint(c.rest, 92);
+  const [ix, iy] = dialPoint(c.rest, 78);
+  const m = $("dialCenter");
+  m.setAttribute("x1", ix); m.setAttribute("y1", iy);
+  m.setAttribute("x2", cx); m.setAttribute("y2", cy);
+
+  const lo = isRudder(sel) ? c.min : 0;
+  const from = c.rest + (c.invert ? -c.max : lo);
+  const to   = c.rest + (c.invert ? -lo : c.max);
+  const [x1, y1] = dialPoint(from, 92);
+  const [x2, y2] = dialPoint(to, 92);
+  const large = Math.abs(to - from) > COUNTS / 2 ? 1 : 0;
+  $("dialArc").setAttribute("d", `M ${x1} ${y1} A 92 92 0 ${large} 1 ${x2} ${y2}`);
+}
+
+// Leme: curva de -1..1 nos dois quadrantes. Freio: so 0..1, ocupando a caixa toda.
+function drawCurve() {
+  const e = cfg[sel].expo / 100;
+  const bi = isRudder(sel);
+  const X = n => bi ? 43 + n * 36 : 7 + n * 72;
+  const Y = v => bi ? 43 - v * 36 : 79 - v * 72;
+
+  let d = "";
+  for (let i = 0; i <= 40; i++) {
+    const n = bi ? -1 + (2 * i) / 40 : i / 40;
+    const v = (1 - e) * n + e * n * n * n;
+    d += (i ? " L " : "M ") + X(n).toFixed(1) + " " + Y(v).toFixed(1);
+  }
+  $("curvePath").setAttribute("d", d);
+
+  $("curveVx").setAttribute("x1", X(0)); $("curveVx").setAttribute("x2", X(0));
+  $("curveVy").setAttribute("y1", Y(0)); $("curveVy").setAttribute("y2", Y(0));
+}
+
+// Mesma normalizacao do firmware, antes do expo - posiciona o ponto na curva.
+function normalizeInput(a, rel) {
+  const c = cfg[a];
+  if (c.invert) rel = -rel;
+  const dz = c.dz;
+  if (!isRudder(a)) {
+    if (rel <= dz) return 0;
+    const span = c.max - dz;
+    return span > 0 ? Math.min(1, (rel - dz) / span) : 0;
+  }
+  if (rel > -dz && rel < dz) return 0;
+  rel += rel > 0 ? -dz : dz;
+  const span = rel >= 0 ? c.max - dz : -c.min - dz;
+  if (span <= 0) return 0;
+  return Math.max(-1, Math.min(1, rel / span));
+}
+
+// -------------------------------------------------------- render ao vivo
+const MAG_STATES = [
+  { text: "OK",           cls: "pill on"   },
+  { text: "sem ímã",      cls: "pill err"  },
+  { text: "fraco",        cls: "pill warn" },
+  { text: "forte",        cls: "pill warn" },
+  { text: "erro I2C",     cls: "pill err"  },
+  { text: "canal vazio",  cls: "pill"      },
+];
+
+function renderLive() {
+  requestAnimationFrame(renderLive);
+  if (!fresh) return;
+  fresh = false;
+
+  // ------- leme
+  const L = live[0];
+  const pct = L.val / RUDDER_RANGE;
+  $("roDeg").textContent  = degOf(L.rel).toFixed(2);
+  $("roPct").textContent  = (pct * 100).toFixed(1);
+  $("roAxis").textContent = L.val;
+  $("roRaw").textContent  = L.raw;
+
+  const posPct = (pct + 1) / 2 * 100;
+  $("needle").style.left = posPct + "%";
+  $("barFill").style.left  = Math.min(50, posPct) + "%";
+  $("barFill").style.width = Math.abs(posPct - 50) + "%";
+
+  // ------- freios
+  for (const a of [1, 2]) {
+    const B = live[a];
+    const p = B.val / BRAKE_RANGE;
+    $("bp" + a).textContent = (p * 100).toFixed(0);
+    $("bd" + a).textContent = degOf(B.rel).toFixed(1);
+    $("bv" + a).textContent = B.val;
+    $("vf" + a).style.height = (p * 100).toFixed(1) + "%";
+  }
+
+  // ------- sensores
+  for (let a = 0; a < AXES.length; a++) {
+    const st = MAG_STATES[live[a].mag] || MAG_STATES[4];
+    $("magPill" + a).className = st.cls;
+    $("magText" + a).textContent = st.text;
+    $("agcFill" + a).style.width = (live[a].agc / 255 * 100).toFixed(0) + "%";
+    $("agcVal" + a).textContent = live[a].agc;
+  }
+
+  // ------- mostrador e curva seguem a aba selecionada
+  const S = live[sel];
+  const [nx, ny] = dialPoint(S.raw, 84);
+  $("dialNeedle").setAttribute("x2", nx);
+  $("dialNeedle").setAttribute("y2", ny);
+  $("dialText").textContent = S.raw + " / 4095";
+
+  const bi = isRudder(sel);
+  const cx = normalizeInput(sel, S.rel);
+  const cy = Math.max(bi ? -1 : 0, Math.min(1, S.val / AXES[sel].range));
+  $("curveDot").setAttribute("cx", (bi ? 43 + cx * 36 : 7 + cx * 72).toFixed(1));
+  $("curveDot").setAttribute("cy", (bi ? 43 - cy * 36 : 79 - cy * 72).toFixed(1));
+}
+requestAnimationFrame(renderLive);
+
+// ------------------------------------------------------------- eventos
+$("btnConnect").addEventListener("click", connect);
+$("btnDisconnect").addEventListener("click", disconnect);
+$("btnSave").addEventListener("click", async () => { await send("w"); setDirty(false); });
+$("btnStatus").addEventListener("click", () => send("s"));
+$("btnInvert").addEventListener("click", async () => { await sendAxis(sel, "i"); setDirty(true); });
+$("btnErase").addEventListener("click", async () => { await send("e"); setDirty(true); });
+
+$("tabs").addEventListener("click", ev => {
+  const tab = ev.target.closest(".tab");
+  if (!tab) return;
+  sel = +tab.dataset.axis;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("sel", +t.dataset.axis === sel));
+  renderConfig();
+});
+
+// Sliders: manda o valor absoluto ("1d5", "0x30"), no maximo ~10 envios/s.
+function bindSlider(id, letter, outId, suffix) {
+  const el = $(id);
+  let pending = null, timer = null;
+  el.addEventListener("input", () => {
+    $(outId).textContent = el.value + suffix;
+    pending = el.value;
+    if (timer) return;
+    timer = setTimeout(() => {
+      timer = null;
+      if (pending !== null) { sendAxis(sel, letter + pending); setDirty(true); pending = null; }
+    }, 100);
+  });
+}
+bindSlider("dz", "d", "dzOut", " counts");
+bindSlider("expo", "x", "expoOut", "%");
+
+if (!("serial" in navigator)) {
+  $("unsupported").classList.remove("hidden");
+  $("btnConnect").disabled = true;
+}
+
+navigator.serial?.addEventListener("disconnect", () => {
+  if (port) { log("dispositivo removido", "warn"); disconnect(); }
+});
+
+window.addEventListener("beforeunload", () => { if (port) send("<"); });
+
+renderConfig();
+</script>
+</body>
+</html>

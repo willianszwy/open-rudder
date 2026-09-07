@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Open Rudder — Hardware</title>
+<style>
+  :root {
+    --ink:   #1d2733;
+    --sub:   #64748b;
+    --rule:  #cbd5e1;
+    --paper: #ffffff;
+    --gnd:   #334155;
+    --v33:   #d64545;
+    --sda:   #e0921f;
+    --scl:   #2f80d6;
+    --board: #f1f5f9;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  body {
+    margin: 0; padding: 28px;
+    background: #e9edf2; color: var(--ink);
+    font: 14px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .sheet {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 26px 30px; margin: 0 auto 26px; max-width: 1460px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  h1 { font-size: 15px; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 2px; }
+  h1 span { color: var(--sub); font-weight: 400; letter-spacing: .04em; text-transform: none; }
+  .sub { color: var(--sub); font-size: 12.5px; margin: 0 0 18px; }
+  svg { display: block; max-width: 100%; height: auto; }
+  .notes { font-size: 12.5px; color: var(--ink); margin-top: 18px; }
+  .notes b { font-weight: 600; }
+  .notes ol { margin: 6px 0 0; padding-left: 20px; }
+  .notes li { margin-bottom: 5px; }
+  code { font-family: var(--mono); background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  /* Na tela a perfurada e ampliada para dar para ler; na impressao volta ao
+     tamanho fisico real (66,04 x 78,74 mm) para servir de gabarito 1:1. */
+  #pcb svg.board { width: 760px; height: auto; }
+  #pcb svg.ruler { width: 60mm; height: 10mm; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .sheet { border: none; box-shadow: none; max-width: none; page-break-after: always; }
+    #pcb svg.board { width: 66.04mm !important; height: 78.74mm !important; }
+    .noprint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =============================================================== DIAGRAMA -->
+<div class="sheet">
+  <h1>Open Rudder <span>— diagrama de ligação</span></h1>
+  <p class="sub">Pro Micro (ATmega32U4) · TCA9548A em 0x70 · 3× AS5600 em 0x36, um por canal</p>
+
+  <svg viewBox="0 0 1440 800" width="1440" xmlns="http://www.w3.org/2000/svg"
+       font-family="ui-monospace, Consolas, monospace">
+
+    <!-- ---------------------------------------------------- trilhos de força -->
+    <line x1="60" y1="70" x2="940" y2="70" stroke="var(--v33)" stroke-width="3.5"/>
+    <text x="60" y="58" fill="var(--v33)" font-size="15" font-weight="700">3V3</text>
+    <line x1="60" y1="742" x2="940" y2="742" stroke="var(--gnd)" stroke-width="3.5"/>
+    <text x="60" y="768" fill="var(--gnd)" font-size="15" font-weight="700">GND</text>
+
+    <!-- ------------------------------------------------------------ Pro Micro -->
+    <rect x="80" y="250" width="215" height="250" rx="7" fill="var(--board)" stroke="var(--ink)" stroke-width="2"/>
+    <text x="187" y="286" text-anchor="middle" font-size="16" font-weight="700">Pro Micro</text>
+    <text x="187" y="306" text-anchor="middle" font-size="11.5" fill="var(--sub)">ATmega32U4 · USB HID</text>
+
+    <g font-size="13">
+      <rect x="283" y="337" width="24" height="18" fill="var(--sda)"/>
+      <text x="273" y="351" text-anchor="end">2 · SDA</text>
+      <rect x="283" y="377" width="24" height="18" fill="var(--scl)"/>
+      <text x="273" y="391" text-anchor="end">3 · SCL</text>
+      <rect x="68" y="417" width="24" height="18" fill="var(--gnd)"/>
+      <text x="103" y="431">GND</text>
+      <rect x="68" y="457" width="24" height="18" fill="var(--v33)"/>
+      <text x="103" y="471">3V3 *</text>
+    </g>
+    <line x1="187" y1="500" x2="187" y2="516" stroke="var(--ink)" stroke-width="2"/>
+    <text x="187" y="533" text-anchor="middle" font-size="11" fill="var(--sub)">USB para o PC ↓</text>
+
+    <polyline points="68,426 46,426 46,742" fill="none" stroke="var(--gnd)" stroke-width="2.5"/>
+    <polyline points="68,466 30,466 30,70"  fill="none" stroke="var(--v33)" stroke-width="2.5"/>
+
+    <!-- ------------------------------------------------------------ TCA9548A -->
+    <rect x="530" y="215" width="250" height="330" rx="7" fill="var(--board)" stroke="var(--ink)" stroke-width="2"/>
+    <text x="655" y="251" text-anchor="middle" font-size="16" font-weight="700">TCA9548A</text>
+    <text x="655" y="271" text-anchor="middle" font-size="11.5" fill="var(--sub)">mux I²C 1→8 · 0x70</text>
+
+    <g font-size="13">
+      <rect x="518" y="337" width="24" height="18" fill="var(--sda)"/><text x="553" y="351">SDA</text>
+      <rect x="518" y="377" width="24" height="18" fill="var(--scl)"/><text x="553" y="391">SCL</text>
+      <rect x="518" y="417" width="24" height="18" fill="var(--gnd)"/><text x="553" y="431">GND</text>
+      <rect x="518" y="457" width="24" height="18" fill="var(--v33)"/><text x="553" y="471">VIN</text>
+    </g>
+    <g font-size="12.5" fill="var(--sub)">
+      <text x="655" y="512" text-anchor="middle">A0 · A1 · A2 → GND</text>
+      <text x="655" y="530" text-anchor="middle">(fixa o endereço em 0x70)</text>
+    </g>
+
+    <line x1="307" y1="346" x2="518" y2="346" stroke="var(--sda)" stroke-width="2.5"/>
+    <line x1="307" y1="386" x2="518" y2="386" stroke="var(--scl)" stroke-width="2.5"/>
+    <polyline points="518,426 470,426 470,742" fill="none" stroke="var(--gnd)" stroke-width="2.5"/>
+    <polyline points="518,466 450,466 450,70"  fill="none" stroke="var(--v33)" stroke-width="2.5"/>
+
+    <!-- saidas do mux: um par SDA/SCL por canal -->
+    <g font-size="12.5">
+      <rect x="768" y="297" width="24" height="16" fill="var(--sda)"/><text x="758" y="309" text-anchor="end">SD0</text>
+      <rect x="768" y="317" width="24" height="16" fill="var(--scl)"/><text x="758" y="329" text-anchor="end">SC0</text>
+      <rect x="768" y="389" width="24" height="16" fill="var(--sda)"/><text x="758" y="401" text-anchor="end">SD1</text>
+      <rect x="768" y="409" width="24" height="16" fill="var(--scl)"/><text x="758" y="421" text-anchor="end">SC1</text>
+      <rect x="768" y="481" width="24" height="16" fill="var(--sda)"/><text x="758" y="493" text-anchor="end">SD2</text>
+      <rect x="768" y="501" width="24" height="16" fill="var(--scl)"/><text x="758" y="513" text-anchor="end">SC2</text>
+    </g>
+
+    <!-- fios mux -> sensores (canal 1 sai reto; 0 e 2 sobem/descem) -->
+    <polyline points="792,305 880,305 880,205 1000,205" fill="none" stroke="var(--sda)" stroke-width="2.5"/>
+    <polyline points="792,325 900,325 900,225 1000,225" fill="none" stroke="var(--scl)" stroke-width="2.5"/>
+    <line x1="792" y1="397" x2="1000" y2="397" stroke="var(--sda)" stroke-width="2.5"/>
+    <line x1="792" y1="417" x2="1000" y2="417" stroke="var(--scl)" stroke-width="2.5"/>
+    <polyline points="792,489 880,489 880,589 1000,589" fill="none" stroke="var(--sda)" stroke-width="2.5"/>
+    <polyline points="792,509 900,509 900,609 1000,609" fill="none" stroke="var(--scl)" stroke-width="2.5"/>
+
+    <!-- ------------------------------------------------------------- AS5600 -->
+    <g id="s0">
+      <rect x="1000" y="150" width="250" height="150" rx="7" fill="var(--board)" stroke="var(--ink)" stroke-width="2"/>
+      <rect x="988" y="196" width="24" height="18" fill="var(--sda)"/>
+      <rect x="988" y="216" width="24" height="18" fill="var(--scl)"/>
+      <text x="1125" y="182" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 0</text>
+      <text x="1125" y="204" text-anchor="middle" font-size="12" fill="var(--sub)">LEME — eixo Rz</text>
+      <text x="1125" y="226" text-anchor="middle" font-size="11.5" fill="var(--sub)">no eixo Ø8 da rudder bar</text>
+      <text x="1125" y="272" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="200" x2="1310" y2="200" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1310" y1="200" x2="1310" y2="180" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1298" y1="180" x2="1322" y2="180" stroke="var(--v33)" stroke-width="3"/>
+      <text x="1310" y="172" text-anchor="middle" font-size="11" fill="var(--v33)">3V3</text>
+      <line x1="1250" y1="250" x2="1310" y2="250" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1310" y1="250" x2="1310" y2="268" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1298" y1="268" x2="1322" y2="268" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1303" y1="273" x2="1317" y2="273" stroke="var(--gnd)" stroke-width="2"/>
+      <line x1="1307" y1="278" x2="1313" y2="278" stroke="var(--gnd)" stroke-width="2"/>
+      <polyline points="1310,200 1360,200 1360,216" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="216" x2="1374" y2="216" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="224" x2="1374" y2="224" stroke="var(--ink)" stroke-width="1.8"/>
+      <polyline points="1360,224 1360,250 1310,250" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="1382" y="224" font-size="11" fill="var(--sub)">100nF</text>
+      <circle cx="1310" cy="200" r="3" fill="var(--ink)"/><circle cx="1310" cy="250" r="3" fill="var(--ink)"/>
+    </g>
+
+    <g id="s1">
+      <rect x="1000" y="342" width="250" height="150" rx="7" fill="var(--board)" stroke="var(--ink)" stroke-width="2"/>
+      <rect x="988" y="388" width="24" height="18" fill="var(--sda)"/>
+      <rect x="988" y="408" width="24" height="18" fill="var(--scl)"/>
+      <text x="1125" y="374" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 1</text>
+      <text x="1125" y="396" text-anchor="middle" font-size="12" fill="var(--sub)">FREIO ESQUERDO — eixo X</text>
+      <text x="1125" y="418" text-anchor="middle" font-size="11.5" fill="var(--sub)">pivô da biqueira esquerda</text>
+      <text x="1125" y="464" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="392" x2="1310" y2="392" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1310" y1="392" x2="1310" y2="372" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1298" y1="372" x2="1322" y2="372" stroke="var(--v33)" stroke-width="3"/>
+      <text x="1310" y="364" text-anchor="middle" font-size="11" fill="var(--v33)">3V3</text>
+      <line x1="1250" y1="442" x2="1310" y2="442" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1310" y1="442" x2="1310" y2="460" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1298" y1="460" x2="1322" y2="460" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1303" y1="465" x2="1317" y2="465" stroke="var(--gnd)" stroke-width="2"/>
+      <line x1="1307" y1="470" x2="1313" y2="470" stroke="var(--gnd)" stroke-width="2"/>
+      <polyline points="1310,392 1360,392 1360,408" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="408" x2="1374" y2="408" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="416" x2="1374" y2="416" stroke="var(--ink)" stroke-width="1.8"/>
+      <polyline points="1360,416 1360,442 1310,442" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="1382" y="416" font-size="11" fill="var(--sub)">100nF</text>
+      <circle cx="1310" cy="392" r="3" fill="var(--ink)"/><circle cx="1310" cy="442" r="3" fill="var(--ink)"/>
+    </g>
+
+    <g id="s2">
+      <rect x="1000" y="534" width="250" height="150" rx="7" fill="var(--board)" stroke="var(--ink)" stroke-width="2"/>
+      <rect x="988" y="580" width="24" height="18" fill="var(--sda)"/>
+      <rect x="988" y="600" width="24" height="18" fill="var(--scl)"/>
+      <text x="1125" y="566" text-anchor="middle" font-size="15" font-weight="700">AS5600 · canal 2</text>
+      <text x="1125" y="588" text-anchor="middle" font-size="12" fill="var(--sub)">FREIO DIREITO — eixo Y</text>
+      <text x="1125" y="610" text-anchor="middle" font-size="11.5" fill="var(--sub)">pivô da biqueira direita</text>
+      <text x="1125" y="656" text-anchor="middle" font-size="12">DIR → GND</text>
+
+      <line x1="1250" y1="584" x2="1310" y2="584" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1310" y1="584" x2="1310" y2="564" stroke="var(--v33)" stroke-width="2.5"/>
+      <line x1="1298" y1="564" x2="1322" y2="564" stroke="var(--v33)" stroke-width="3"/>
+      <text x="1310" y="556" text-anchor="middle" font-size="11" fill="var(--v33)">3V3</text>
+      <line x1="1250" y1="634" x2="1310" y2="634" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1310" y1="634" x2="1310" y2="652" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1298" y1="652" x2="1322" y2="652" stroke="var(--gnd)" stroke-width="2.5"/>
+      <line x1="1303" y1="657" x2="1317" y2="657" stroke="var(--gnd)" stroke-width="2"/>
+      <line x1="1307" y1="662" x2="1313" y2="662" stroke="var(--gnd)" stroke-width="2"/>
+      <polyline points="1310,584 1360,584 1360,600" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="600" x2="1374" y2="600" stroke="var(--ink)" stroke-width="1.8"/>
+      <line x1="1346" y1="608" x2="1374" y2="608" stroke="var(--ink)" stroke-width="1.8"/>
+      <polyline points="1360,608 1360,634 1310,634" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="1382" y="608" font-size="11" fill="var(--sub)">100nF</text>
+      <circle cx="1310" cy="584" r="3" fill="var(--ink)"/><circle cx="1310" cy="634" r="3" fill="var(--ink)"/>
+    </g>
+
+    <!-- ------------------------------------------------------------- legenda -->
+    <g font-size="12.5">
+      <rect x="80" y="586" width="420" height="128" rx="6" fill="#fbfdff" stroke="var(--rule)"/>
+      <text x="96" y="608" font-weight="700" font-size="12">LEGENDA</text>
+      <line x1="96" y1="626" x2="126" y2="626" stroke="var(--v33)" stroke-width="3"/><text x="134" y="630">3,3 V</text>
+      <line x1="96" y1="646" x2="126" y2="646" stroke="var(--gnd)" stroke-width="3"/><text x="134" y="650">GND</text>
+      <line x1="250" y1="626" x2="280" y2="626" stroke="var(--sda)" stroke-width="3"/><text x="288" y="630">SDA (dados)</text>
+      <line x1="250" y1="646" x2="280" y2="646" stroke="var(--scl)" stroke-width="3"/><text x="288" y="650">SCL (clock)</text>
+      <text x="96" y="674" font-size="11.5" fill="var(--sub)">Os símbolos 3V3/GND nos sensores ligam nos mesmos</text>
+      <text x="96" y="690" font-size="11.5" fill="var(--sub)">trilhos — 4 fios por sensor. Cada canal do mux é um</text>
+      <text x="96" y="706" font-size="11.5" fill="var(--sub)">barramento isolado: os três mantêm o mesmo 0x36.</text>
+    </g>
+  </svg>
+
+  <div class="notes">
+    <b>Notas de montagem</b>
+    <ol>
+      <li><b>* De onde vem o 3V3.</b> Meça o pino marcado 3V3 da sua placa. Se der ~3,3 V, use direto
+        (3× AS5600 ≈ 20 mA, dentro dos 50 mA do regulador). Se esse pino não existir — caso do Pro Micro
+        SparkFun 5 V — alimente um módulo <code>AMS1117-3.3</code> pelo VCC e use a saída dele como trilho 3V3.
+        <b>Nada no barramento pode ver 5 V:</b> o AS5600 é 3,3 V.</li>
+      <li><b>DIR de cada sensor vai ao GND</b> — define o sentido horário como ângulo crescente. Deixar
+        flutuando dá leitura errática.</li>
+      <li><b>Pull-ups.</b> Os módulos AS5600 já trazem os deles, e cada canal do mux é isolado, então não
+        precisa somar nada. O firmware desliga os pull-ups internos do ATmega32U4 (que são de 5 V).</li>
+      <li><b>100 nF</b> entre 3V3 e GND junto de cada conector, e <b>10 µF</b> na saída do regulador.</li>
+      <li><b>Cabo até as biqueiras:</b> par trançado (CAT5 serve) — torça SDA com GND e SCL com 3V3.
+        Se aparecer <code>sem resposta no eixo</code>, baixe <code>I2C_CLOCK</code> para <code>100000</code> no firmware.</li>
+      <li><b>Etiquete os três conectores.</b> Os sensores são idênticos; trocar dois de lugar troca os eixos
+        sem dar erro nenhum.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============================================================== PERFURADA -->
+<div class="sheet">
+  <h1>Open Rudder <span>— layout na placa perfurada</span></h1>
+  <p class="sub">
+    Placa 7×9 cm · grade 26×31 furos a 2,54 mm · vista pelo <b>lado dos componentes</b>.
+    Para imprimir 1:1: Ctrl+P, escala 100%, sem “ajustar à página”, e confira a régua abaixo.
+  </p>
+
+  <div id="pcb"></div>
+
+  <div class="notes">
+    <b>Ordem de montagem sugerida</b>
+    <ol>
+      <li>Solde primeiro os <b>dois barramentos</b> (fio rígido nu nas colunas B e D, de ponta a ponta).</li>
+      <li>Depois os <b>soquetes fêmea</b> do Pro Micro — nunca solde a placa direto: você ainda precisa do
+        duplo-toque no RESET para gravar.</li>
+      <li>Mux, conectores, capacitores. Por último os fios finos de sinal, pelo lado do cobre.</li>
+      <li>Antes de plugar qualquer sensor: ligue o USB e <b>meça o trilho 3V3</b>. Se estiver em 5 V,
+        algo está errado — o AS5600 não sobrevive.</li>
+    </ol>
+    <p style="margin-top:10px;color:var(--sub);font-size:12px">
+      A grade assume 26×31 furos. Se a sua placa tiver contagem diferente, os blocos deslizam à vontade —
+      a netlist do diagrama acima não muda.
+    </p>
+  </div>
+</div>
+
+<script>
+// Gera a grade da perfurada em unidades reais (mm), para sair 1:1 na impressao.
+(function () {
+  const COLS = 26, ROWS = 31, P = 2.54;        // furos e passo em mm
+  const M = 9;                                  // margem para as reguas
+  const W = COLS * P + M * 2, H = ROWS * P + M * 2;
+
+  const colName = i => String.fromCharCode(65 + i);
+  const rowName = i => i < 26 ? String.fromCharCode(65 + i) : String.fromCharCode(65 + i - 26) + "'";
+  const x = c => M + P / 2 + c * P;
+  const y = r => M + P / 2 + r * P;
+
+  let s = `<svg class="board" xmlns="http://www.w3.org/2000/svg" width="${W}mm" height="${H}mm"
+                viewBox="0 0 ${W} ${H}" font-family="ui-monospace, Consolas, monospace">`;
+
+  s += `<rect x="${M - 2}" y="${M - 2}" width="${COLS * P + 4}" height="${ROWS * P + 4}"
+             rx="1.5" fill="#f7f2e4" stroke="#b9a67c" stroke-width=".4"/>`;
+
+  // blocos dos componentes (col inicial, lin inicial, largura, altura, rotulo, cor)
+  const blocks = [
+    [8,  0, 10, 13, "Pro Micro (soquete)", "#2f80d6"],
+    [8, 15,  9,  7, "TCA9548A",            "#7c5cd6"],
+    [4, 24,  6,  5, "LEME",                "#159a6b"],
+    [11,24,  6,  5, "FREIO ESQ",           "#159a6b"],
+    [18,24,  6,  5, "FREIO DIR",           "#159a6b"],
+    [19,15,  6,  7, "AMS1117 (se precisar)", "#c2410c"],
+  ];
+  for (const [c, r, w, h, label, color] of blocks) {
+    s += `<rect x="${x(c) - P/2}" y="${y(r) - P/2}" width="${w * P}" height="${h * P}"
+               rx="1" fill="${color}" fill-opacity=".10" stroke="${color}" stroke-width=".35"/>`;
+    s += `<text x="${x(c) - P/2 + w * P / 2}" y="${y(r) - P/2 + h * P / 2 + .9}"
+                text-anchor="middle" font-size="2.1" fill="${color}" font-weight="700"
+                paint-order="stroke" stroke="#f7f2e4" stroke-width="1.1"
+                stroke-linejoin="round">${label}</text>`;
+  }
+
+  // barramentos de forca: coluna B = GND, coluna D = 3V3
+  s += `<line x1="${x(1)}" y1="${y(0)}" x2="${x(1)}" y2="${y(ROWS-1)}" stroke="#334155" stroke-width="1.1" stroke-linecap="round"/>`;
+  s += `<line x1="${x(3)}" y1="${y(0)}" x2="${x(3)}" y2="${y(ROWS-1)}" stroke="#d64545" stroke-width="1.1" stroke-linecap="round"/>`;
+  s += `<text x="${x(1)}" y="${y(ROWS-1) + 5.4}" text-anchor="middle" font-size="2.2" fill="#334155" font-weight="700">GND</text>`;
+  s += `<text x="${x(3)}" y="${y(ROWS-1) + 5.4}" text-anchor="middle" font-size="2.2" fill="#d64545" font-weight="700">3V3</text>`;
+
+  // furos
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      s += `<circle cx="${x(c)}" cy="${y(r)}" r=".42" fill="none" stroke="#9a8e70" stroke-width=".18"/>`;
+
+  // rotulos das bordas
+  for (let c = 0; c < COLS; c++)
+    s += `<text x="${x(c)}" y="${M - 3.4}" text-anchor="middle" font-size="1.9" fill="#8a7f66">${colName(c)}</text>`;
+  for (let r = 0; r < ROWS; r++)
+    s += `<text x="${M - 3.2}" y="${y(r) + .7}" text-anchor="middle" font-size="1.9" fill="#8a7f66">${rowName(r)}</text>`;
+
+  s += `</svg>`;
+
+  // regua de conferencia da impressao
+  s += `<div style="margin-top:14px">
+          <svg class="ruler" xmlns="http://www.w3.org/2000/svg" width="60mm" height="10mm" viewBox="0 0 60 10">
+            <line x1="2" y1="6" x2="52" y2="6" stroke="#1d2733" stroke-width=".5"/>
+            <line x1="2" y1="3" x2="2" y2="9" stroke="#1d2733" stroke-width=".5"/>
+            <line x1="52" y1="3" x2="52" y2="9" stroke="#1d2733" stroke-width=".5"/>
+            <text x="27" y="3.2" text-anchor="middle" font-size="3.2"
+                  font-family="ui-monospace, Consolas, monospace">50 mm</text>
+          </svg>
+          <div style="font-size:11.5px;color:var(--sub);margin-top:2px">
+            Régua de conferência — <b>só vale na folha impressa</b>. Meça: se não der 50 mm exatos,
+            a escala da impressão está errada e o gabarito não serve.
+          </div>
+        </div>`;
+
+  document.getElementById("pcb").innerHTML = s;
+})();
+</script>
+</body>
+</html>

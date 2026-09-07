@@ -1,0 +1,11 @@
+# artefatos de build do arduino-cli
+build/
+*.hex
+*.elf
+
+# ferramentas locais
+.playwright-mcp/
+
+# Windows
+Thumbs.db
+desktop.ini
