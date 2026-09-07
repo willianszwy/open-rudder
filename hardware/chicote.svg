@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 540" width="1400"
+     font-family="ui-monospace, Consolas, monospace">
+  <title>Open Rudder — chicote do sensor</title>
+
+  <!-- ponta do sensor -->
+  <rect x="70" y="170" width="180" height="140" rx="6" fill="#f1f5f9" stroke="#1d2733" stroke-width="2"/>
+  <text x="160" y="152" text-anchor="middle" font-size="13" font-weight="700">Módulo AS5600</text>
+  <text x="160" y="333" text-anchor="middle" font-size="11" fill="#64748b">confira a serigrafia:</text>
+  <text x="160" y="348" text-anchor="middle" font-size="11" fill="#64748b">a ordem dos pinos varia</text>
+
+  <g font-size="12">
+    <rect x="244" y="186" width="18" height="12" fill="#d64545"/><text x="236" y="196" text-anchor="end">VCC</text>
+    <rect x="244" y="212" width="18" height="12" fill="#334155"/><text x="236" y="222" text-anchor="end">GND</text>
+    <rect x="244" y="238" width="18" height="12" fill="#94a3b8"/><text x="236" y="248" text-anchor="end">DIR</text>
+    <rect x="244" y="264" width="18" height="12" fill="#2f80d6"/><text x="236" y="274" text-anchor="end">SCL</text>
+    <rect x="244" y="290" width="18" height="12" fill="#e0921f"/><text x="236" y="300" text-anchor="end">SDA</text>
+  </g>
+
+  <!-- jumper DIR para GND, feito no proprio modulo -->
+  <path d="M 262 244 C 288 244 288 218 262 218" fill="none" stroke="#334155" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="286" y1="228" x2="316" y2="128" stroke="#94a3b8" stroke-width="1"/>
+  <text x="322" y="122" font-size="11.5" fill="#334155" font-weight="700">DIR → GND</text>
+  <text x="322" y="137" font-size="10.5" fill="#64748b">jumper curto no próprio módulo</text>
+
+  <!-- fios convergindo para a capa -->
+  <path d="M 262 192 C 310 192 330 232 372 238" fill="none" stroke="#d64545" stroke-width="2"/>
+  <path d="M 262 218 C 320 218 340 234 372 240" fill="none" stroke="#334155" stroke-width="2"/>
+  <path d="M 262 270 C 320 270 340 246 372 244" fill="none" stroke="#2f80d6" stroke-width="2"/>
+  <path d="M 262 296 C 310 296 330 252 372 246" fill="none" stroke="#e0921f" stroke-width="2"/>
+
+  <!-- termorretratil sobre as soldas -->
+  <rect x="330" y="212" width="96" height="60" rx="9" fill="#1d2733" fill-opacity=".10" stroke="#1d2733"
+        stroke-width="1.2" stroke-dasharray="5 3"/>
+  <text x="378" y="292" text-anchor="middle" font-size="11" fill="#1d2733">termorretrátil</text>
+  <text x="378" y="306" text-anchor="middle" font-size="10.5" fill="#64748b">sobre as 4 soldas</text>
+
+  <!-- cabo com laco de folga -->
+  <path d="M 426 242 L 520 242 C 610 242 610 430 710 430 C 810 430 810 242 900 242 L 1010 242"
+        fill="none" stroke="#8a8f98" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 426 242 L 520 242 C 610 242 610 430 710 430 C 810 430 810 242 900 242 L 1010 242"
+        fill="none" stroke="#c8ccd2" stroke-width="4"/>
+
+  <!-- abracadeira de alivio -->
+  <rect x="486" y="226" width="16" height="32" rx="3" fill="none" stroke="#159a6b" stroke-width="2.5"/>
+  <line x1="494" y1="258" x2="494" y2="300" stroke="#159a6b" stroke-width="2"/>
+  <path d="M 476 300 L 512 300" stroke="#159a6b" stroke-width="4"/>
+  <text x="494" y="322" text-anchor="middle" font-size="11.5" fill="#159a6b" font-weight="700">abraçadeira</text>
+  <text x="494" y="337" text-anchor="middle" font-size="10.5" fill="#159a6b">presa à estrutura</text>
+
+  <text x="710" y="466" text-anchor="middle" font-size="12" font-weight="700" fill="#1d2733">laço de folga</text>
+  <text x="710" y="482" text-anchor="middle" font-size="11" fill="#64748b">a flexão acontece ao longo do cabo, não na solda</text>
+
+  <!-- ponta da placa: conector e header -->
+  <rect x="1010" y="206" width="86" height="72" rx="4" fill="#f8fafc" stroke="#1d2733" stroke-width="2"/>
+  <g font-size="10" fill="#64748b">
+    <rect x="1020" y="216" width="14" height="52" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width=".8"/>
+    <rect x="1038" y="216" width="14" height="52" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width=".8"/>
+    <rect x="1056" y="216" width="14" height="52" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width=".8"/>
+    <rect x="1074" y="216" width="14" height="52" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width=".8"/>
+    <text x="1027" y="292" text-anchor="middle">1</text>
+    <text x="1045" y="292" text-anchor="middle">2</text>
+    <text x="1063" y="292" text-anchor="middle">3</text>
+    <text x="1081" y="292" text-anchor="middle">4</text>
+  </g>
+  <text x="1053" y="192" text-anchor="middle" font-size="13" font-weight="700">JST-XH 4 vias</text>
+  <text x="1053" y="316" text-anchor="middle" font-size="10.5" fill="#64748b">trava para cima</text>
+
+  <rect x="1112" y="206" width="34" height="72" rx="3" fill="#334155"/>
+  <g stroke="#94a3b8" stroke-width="2">
+    <line x1="1146" y1="222" x2="1166" y2="222"/>
+    <line x1="1146" y1="238" x2="1166" y2="238"/>
+    <line x1="1146" y1="254" x2="1166" y2="254"/>
+    <line x1="1146" y1="270" x2="1166" y2="270"/>
+  </g>
+  <text x="1180" y="230" font-size="12" font-weight="700">header</text>
+  <text x="1180" y="246" font-size="11" fill="#64748b">soldado na</text>
+  <text x="1180" y="260" font-size="11" fill="#64748b">perfurada</text>
+
+  <!-- corte transversal do cabo -->
+  <circle cx="150" cy="450" r="46" fill="#f1f5f9" stroke="#8a8f98" stroke-width="6"/>
+  <circle cx="132" cy="432" r="12" fill="#d64545"/>
+  <circle cx="168" cy="432" r="12" fill="#334155"/>
+  <circle cx="132" cy="468" r="12" fill="#e0921f"/>
+  <circle cx="168" cy="468" r="12" fill="#2f80d6"/>
+  <text x="150" y="518" text-anchor="middle" font-size="11.5" fill="#64748b">UL2464 · 4 núcleos · 26 AWG</text>
+  <text x="230" y="428" font-size="11">3V3</text>
+  <text x="230" y="446" font-size="11">GND</text>
+  <text x="230" y="464" font-size="11">SDA</text>
+  <text x="230" y="482" font-size="11">SCL</text>
+  <line x1="182" y1="428" x2="222" y2="424" stroke="#d64545" stroke-width="1.5"/>
+  <line x1="184" y1="440" x2="222" y2="442" stroke="#334155" stroke-width="1.5"/>
+  <line x1="184" y1="462" x2="222" y2="460" stroke="#e0921f" stroke-width="1.5"/>
+  <line x1="182" y1="474" x2="222" y2="478" stroke="#2f80d6" stroke-width="1.5"/>
+
+  <!-- medida -->
+  <g stroke="#1d2733" stroke-width="1.2">
+    <line x1="1010" y1="360" x2="1010" y2="400"/>
+    <line x1="426" y1="360" x2="426" y2="400"/>
+    <line x1="426" y1="380" x2="1010" y2="380" stroke-dasharray="6 4"/>
+  </g>
+  <text x="718" y="374" text-anchor="middle" font-size="11.5" fill="#1d2733" font-weight="700"
+        paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">medir com o pedal no fim do curso</text>
+</svg>

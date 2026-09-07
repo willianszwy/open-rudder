@@ -27,6 +27,13 @@
 
   img.wiring { display: block; width: 100%; max-width: 1440px; height: auto; }
 
+  table.pinout { border-collapse: collapse; font-size: 12.5px; }
+  table.pinout th, table.pinout td { border: 1px solid var(--rule); padding: 6px 12px; text-align: left; }
+  table.pinout th { background: #f1f5f9; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--sub); }
+  table.pinout td.n { font-family: var(--mono); text-align: center; font-weight: 700; }
+  table.pinout td.fill { min-width: 150px; background: #fcfcfd; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
+
   /* A perfurada é ampliada na tela para dar para ler. Na impressão volta ao
      tamanho físico real (84,04 × 96,74 mm) e vira gabarito 1:1. */
   img.board { display: block; width: 760px; max-width: 100%; height: auto; }
@@ -103,6 +110,60 @@
       O layout é gerado por <code>gerar_perfurada.py</code> — mexa nos blocos lá e rode o script,
       não edite o SVG na mão. A grade assume 26×31 furos; com outra contagem os blocos deslizam
       à vontade e a netlist do diagrama acima não muda.
+    </p>
+  </div>
+</div>
+
+<div class="sheet">
+  <h1>Open Rudder <span>— chicote do sensor</span></h1>
+  <p class="sub">
+    Três chicotes iguais, um por sensor. Cabo UL2464 de 4 núcleos, 26 AWG · conector
+    JST-XH de 4 vias só do lado da placa.
+  </p>
+
+  <img class="wiring" src="chicote.svg" alt="Chicote: módulo AS5600, cabo com laço de folga e conector JST-XH">
+
+  <h3 style="font-size:13px;margin:22px 0 8px">Ligação, via a via</h3>
+  <table class="pinout">
+    <tr>
+      <th>Via do JST-XH</th><th>Função</th><th>Pino no módulo</th><th>Cor do <i>seu</i> cabo</th>
+    </tr>
+    <tr><td class="n">1</td><td><span class="sw" style="background:#d64545"></span>3V3</td><td>VCC</td><td class="fill"></td></tr>
+    <tr><td class="n">2</td><td><span class="sw" style="background:#334155"></span>GND</td><td>GND <i>(+ jumper para DIR)</i></td><td class="fill"></td></tr>
+    <tr><td class="n">3</td><td><span class="sw" style="background:#2f80d6"></span>SCL</td><td>SCL</td><td class="fill"></td></tr>
+    <tr><td class="n">4</td><td><span class="sw" style="background:#e0921f"></span>SDA</td><td>SDA</td><td class="fill"></td></tr>
+  </table>
+  <p style="font-size:11.5px;color:var(--sub);margin-top:8px">
+    Preencha a última coluna à caneta antes de cortar o primeiro cabo: as cores do UL2464
+    não seguem convenção nenhuma, e com a capa já removida é fácil inverter SDA e SCL.
+    A ordem das vias 1–4 é convenção nossa; a do módulo é o que estiver na serigrafia dele,
+    que muda de fabricante para fabricante.
+  </p>
+
+  <div class="notes">
+    <b>Montagem</b>
+    <ol>
+      <li><b>Meça o cabo com o pedal no fim do curso</b>, não em repouso. Os dois chicotes dos
+        freios acompanham a biqueira: cortados no comprimento de repouso, ficam esticados na
+        deflexão máxima e arrancam a solda. Meça na posição mais longa e ainda acrescente o laço.</li>
+      <li><b>DIR vai ao GND no próprio módulo</b>, com um jumper curto. Não gaste uma via do
+        conector com isso.</li>
+      <li><b>Solda no lado do sensor, conector só no lado da placa.</b> A ponta que flexiona é a
+        que falha; um conector ali seria mais dois contatos no lugar errado. Se um sensor
+        pifar, você troca o conjunto sensor + cabo inteiro.</li>
+      <li><b>Termorretrátil</b> sobre as quatro soldas, e um segundo pedaço maior por cima de
+        todas, envolvendo a entrada do cabo.</li>
+      <li><b>Abraçadeira presa à estrutura</b> a uns 3 cm da solda. É ela que segura o esforço:
+        sem isso, a solda vira o ponto de dobra e trinca. É assim que morrem 90% desses cabos.</li>
+      <li><b>Teste de arranque antes do chicote real:</b> crimpe um terminal num pedaço do
+        mesmo cabo e puxe firme. O fio tem que arrebentar antes de sair do terminal. Se ele
+        desliza, o ninho do alicate está grande demais — troque de ninho e repita.</li>
+      <li><b>Etiquete os três</b> (leme / esq / dir). São idênticos, e trocar dois de lugar troca
+        os eixos sem dar erro nenhum.</li>
+    </ol>
+    <p style="margin-top:10px;color:var(--sub);font-size:12px">
+      Conferência final: abra o calibrador e pise em cada pedal olhando qual eixo se move.
+      Chicote trocado aparece em cinco segundos, antes de parafusar qualquer coisa.
     </p>
   </div>
 </div>
