@@ -46,8 +46,10 @@ Detalhes de montagem, capacitores, cabeamento e o layout da placa estão em
 `hardware/diagrama.html` — abra no navegador e imprima: a folha da perfurada sai em
 tamanho real e serve de gabarito.
 
-> **Atenção à tensão:** o AS5600 é 3,3 V. Se o seu Pro Micro for 5 V, nada do barramento
-> pode ver 5 V — veja a nota 1 do diagrama.
+> **Tensão:** o AS5600 tem dois modos de alimentação — 5 V pelo pino VDD5V (LDO interno)
+> ou 3,3 V pelo VDD3V3. Com módulos de 5 V, o barramento inteiro roda no VCC do Pro Micro
+> e nenhum regulador é necessário. Confirme qual variante são os seus antes de ligar:
+> num módulo de 3,3 V, 5 V ultrapassa o limite e queima.
 
 ### Lista de material (só a eletrônica)
 
@@ -56,7 +58,7 @@ tamanho real e serve de gabarito.
 | Pro Micro (ATmega32U4, USB HID nativo) | 1 | 35 |
 | Módulo AS5600 | 3 | 75 |
 | Ímã diametral Ø6×2,5 mm | 3 | 24 |
-| Multiplexador I²C TCA9548A | 1 | 12 |
+| Multiplexador I²C TCA9548A (módulo HW-617) | 1 | 12 |
 | Placa perfurada 7×9 cm, conectores, cabo par trançado | — | 25 |
 | **Total** | | **~R$ 170** |
 

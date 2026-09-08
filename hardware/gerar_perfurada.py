@@ -18,14 +18,14 @@ MARGIN = 9                 # espaço para as réguas de letras
 W = COLS * PITCH + MARGIN * 2
 H = ROWS * PITCH + MARGIN * 2
 
-# barramentos de força: coluna B = GND, coluna D = 3V3 (índices 0-based)
-COL_GND, COL_3V3 = 1, 3
+# barramentos: coluna B = GND, coluna D = VCC (5 V do Pro Micro). Índices 0-based.
+COL_GND, COL_VCC = 1, 3
 
 # (coluna, linha, largura, altura, rótulo, cor) — tudo em furos
 BLOCOS = [
     (8,   0, 10, 13, "Pro Micro (soquete)",   "#2f80d6"),
     (8,  15,  9,  7, "TCA9548A",              "#7c5cd6"),
-    (19, 15,  6,  7, "AMS1117 (se precisar)", "#c2410c"),
+    (19, 15,  6,  7, "AMS1117 (só p/ AS5600 3V3)", "#c2410c"),
     (4,  24,  6,  5, "LEME",                  "#159a6b"),
     (11, 24,  6,  5, "FREIO ESQ",             "#159a6b"),
     (18, 24,  6,  5, "FREIO DIR",             "#159a6b"),
@@ -74,7 +74,7 @@ def build() -> str:
             f'stroke-linejoin="round">{label}</text>'
         )
 
-    for col, color, nome in ((COL_GND, "#334155", "GND"), (COL_3V3, "#d64545", "3V3")):
+    for col, color, nome in ((COL_GND, "#334155", "GND"), (COL_VCC, "#d64545", "VCC")):
         p.append(
             f'<line x1="{cx(col):.2f}" y1="{cy(0):.2f}" x2="{cx(col):.2f}" y2="{cy(ROWS - 1):.2f}" '
             f'stroke="{color}" stroke-width="1.1" stroke-linecap="round"/>'

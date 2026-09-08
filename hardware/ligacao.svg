@@ -5,7 +5,7 @@
 
     <!-- trilhos de força -->
     <line x1="60" y1="70" x2="940" y2="70" stroke="#d64545" stroke-width="3.5"/>
-    <text x="60" y="58" fill="#d64545" font-size="15" font-weight="700">3V3</text>
+    <text x="60" y="58" fill="#d64545" font-size="15" font-weight="700">VCC</text>
     <line x1="60" y1="742" x2="940" y2="742" stroke="#334155" stroke-width="3.5"/>
     <text x="60" y="768" fill="#334155" font-size="15" font-weight="700">GND</text>
 
@@ -22,7 +22,7 @@
       <rect x="68" y="417" width="24" height="18" fill="#334155"/>
       <text x="103" y="431">GND</text>
       <rect x="68" y="457" width="24" height="18" fill="#d64545"/>
-      <text x="103" y="471">3V3 *</text>
+      <text x="103" y="471">VCC *</text>
     </g>
     <line x1="187" y1="500" x2="187" y2="516" stroke="#1d2733" stroke-width="2"/>
     <text x="187" y="533" text-anchor="middle" font-size="11" fill="#64748b">USB para o PC ↓</text>
@@ -82,7 +82,7 @@
       <line x1="1250" y1="200" x2="1310" y2="200" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1310" y1="200" x2="1310" y2="180" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1298" y1="180" x2="1322" y2="180" stroke="#d64545" stroke-width="3"/>
-      <text x="1310" y="172" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <text x="1310" y="172" text-anchor="middle" font-size="11" fill="#d64545">VCC</text>
       <line x1="1250" y1="250" x2="1310" y2="250" stroke="#334155" stroke-width="2.5"/>
       <line x1="1310" y1="250" x2="1310" y2="268" stroke="#334155" stroke-width="2.5"/>
       <line x1="1298" y1="268" x2="1322" y2="268" stroke="#334155" stroke-width="2.5"/>
@@ -108,7 +108,7 @@
       <line x1="1250" y1="392" x2="1310" y2="392" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1310" y1="392" x2="1310" y2="372" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1298" y1="372" x2="1322" y2="372" stroke="#d64545" stroke-width="3"/>
-      <text x="1310" y="364" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <text x="1310" y="364" text-anchor="middle" font-size="11" fill="#d64545">VCC</text>
       <line x1="1250" y1="442" x2="1310" y2="442" stroke="#334155" stroke-width="2.5"/>
       <line x1="1310" y1="442" x2="1310" y2="460" stroke="#334155" stroke-width="2.5"/>
       <line x1="1298" y1="460" x2="1322" y2="460" stroke="#334155" stroke-width="2.5"/>
@@ -134,7 +134,7 @@
       <line x1="1250" y1="584" x2="1310" y2="584" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1310" y1="584" x2="1310" y2="564" stroke="#d64545" stroke-width="2.5"/>
       <line x1="1298" y1="564" x2="1322" y2="564" stroke="#d64545" stroke-width="3"/>
-      <text x="1310" y="556" text-anchor="middle" font-size="11" fill="#d64545">3V3</text>
+      <text x="1310" y="556" text-anchor="middle" font-size="11" fill="#d64545">VCC</text>
       <line x1="1250" y1="634" x2="1310" y2="634" stroke="#334155" stroke-width="2.5"/>
       <line x1="1310" y1="634" x2="1310" y2="652" stroke="#334155" stroke-width="2.5"/>
       <line x1="1298" y1="652" x2="1322" y2="652" stroke="#334155" stroke-width="2.5"/>
@@ -152,11 +152,11 @@
     <g font-size="12.5">
       <rect x="80" y="586" width="420" height="128" rx="6" fill="#fbfdff" stroke="#cbd5e1"/>
       <text x="96" y="608" font-weight="700" font-size="12">LEGENDA</text>
-      <line x1="96" y1="626" x2="126" y2="626" stroke="#d64545" stroke-width="3"/><text x="134" y="630">3,3 V</text>
+      <line x1="96" y1="626" x2="126" y2="626" stroke="#d64545" stroke-width="3"/><text x="134" y="630">VCC (5 V)</text>
       <line x1="96" y1="646" x2="126" y2="646" stroke="#334155" stroke-width="3"/><text x="134" y="650">GND</text>
       <line x1="250" y1="626" x2="280" y2="626" stroke="#e0921f" stroke-width="3"/><text x="288" y="630">SDA (dados)</text>
       <line x1="250" y1="646" x2="280" y2="646" stroke="#2f80d6" stroke-width="3"/><text x="288" y="650">SCL (clock)</text>
-      <text x="96" y="674" font-size="11.5" fill="#64748b">Os símbolos 3V3/GND nos sensores ligam nos mesmos</text>
+      <text x="96" y="674" font-size="11.5" fill="#64748b">Os símbolos VCC/GND nos sensores ligam nos mesmos</text>
       <text x="96" y="690" font-size="11.5" fill="#64748b">trilhos — 4 fios por sensor. Cada canal do mux é um</text>
       <text x="96" y="706" font-size="11.5" fill="#64748b">barramento isolado: os três mantêm o mesmo 0x36.</text>
     </g>

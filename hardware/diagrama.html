@@ -56,16 +56,17 @@
   <div class="notes">
     <b>Notas de montagem</b>
     <ol>
-      <li><b>* De onde vem o 3V3.</b> Meça o pino marcado 3V3 da sua placa. Se der ~3,3 V, use direto
-        (3× AS5600 ≈ 20 mA, dentro dos 50 mA do regulador). Se esse pino não existir — caso do Pro Micro
-        SparkFun 5 V — alimente um módulo <code>AMS1117-3.3</code> pelo VCC e use a saída dele como trilho 3V3.
-        <b>Nada no barramento pode ver 5 V:</b> o AS5600 é 3,3 V.</li>
+      <li><b>* Alimentação: 5 V direto do Pro Micro.</b> O AS5600 tem dois modos — pelo pino
+        VDD5V (4,5–5,5 V, com LDO interno) ou pelo VDD3V3 (3,0–3,6 V). Os módulos de 5 V rodam
+        no VCC do Pro Micro sem regulador nenhum, e o TCA9548A aceita até 5,5 V. <b>Só se os seus
+        módulos forem da variante 3,3 V</b> é que entra um <code>AMS1117-3.3</code> alimentado
+        pelo VCC — nesse caso 5 V passa dos 3,6 V do modo e queima o sensor.</li>
       <li><b>DIR de cada sensor vai ao GND</b> — define o sentido horário como ângulo crescente. Deixar
         flutuando dá leitura errática.</li>
       <li><b>Pull-ups.</b> Os módulos AS5600 já trazem os deles, e cada canal do mux é isolado, então não
         precisa somar nada. O firmware desliga os pull-ups internos do ATmega32U4 (que são de 5 V).</li>
-      <li><b>100 nF</b> entre 3V3 e GND junto de cada conector, e <b>10 µF</b> na saída do regulador.</li>
-      <li><b>Cabo até as biqueiras:</b> par trançado (CAT5 serve) — torça SDA com GND e SCL com 3V3.
+      <li><b>100 nF</b> entre VCC e GND junto de cada conector, e <b>10 µF</b> na entrada de alimentação da placa.</li>
+      <li><b>Cabo até as biqueiras:</b> par trançado (CAT5 serve) — torça SDA com GND e SCL com VCC.
         Se aparecer <code>sem resposta no eixo</code>, baixe <code>I2C_CLOCK</code> para <code>100000</code> no firmware.</li>
       <li><b>Etiquete os três conectores.</b> Os sensores são idênticos; trocar dois de lugar troca os eixos
         sem dar erro nenhum.</li>
@@ -103,8 +104,8 @@
       <li>Depois os <b>soquetes fêmea</b> do Pro Micro — nunca solde a placa direto: você ainda precisa do
         duplo-toque no RESET para gravar.</li>
       <li>Mux, conectores, capacitores. Por último os fios finos de sinal, pelo lado do cobre.</li>
-      <li>Antes de plugar qualquer sensor: ligue o USB e <b>meça o trilho 3V3</b>. Se estiver em 5 V,
-        algo está errado — o AS5600 não sobrevive.</li>
+      <li>Antes de plugar qualquer sensor: ligue o USB e <b>meça o trilho de alimentação</b>. Ele deve
+        bater com o modo dos seus módulos: 5 V para os de VDD5V, 3,3 V para os de VDD3V3.</li>
     </ol>
     <p style="margin-top:10px;color:var(--sub);font-size:12px">
       O layout é gerado por <code>gerar_perfurada.py</code> — mexa nos blocos lá e rode o script,
@@ -128,7 +129,7 @@
     <tr>
       <th>Via do JST-XH</th><th>Função</th><th>Pino no módulo</th><th>Cor do <i>seu</i> cabo</th>
     </tr>
-    <tr><td class="n">1</td><td><span class="sw" style="background:#d64545"></span>3V3</td><td>VCC</td><td class="fill"></td></tr>
+    <tr><td class="n">1</td><td><span class="sw" style="background:#d64545"></span>VCC</td><td>VCC (5 V)</td><td class="fill"></td></tr>
     <tr><td class="n">2</td><td><span class="sw" style="background:#334155"></span>GND</td><td>GND <i>(+ jumper para DIR)</i></td><td class="fill"></td></tr>
     <tr><td class="n">3</td><td><span class="sw" style="background:#2f80d6"></span>SCL</td><td>SCL</td><td class="fill"></td></tr>
     <tr><td class="n">4</td><td><span class="sw" style="background:#e0921f"></span>SDA</td><td>SDA</td><td class="fill"></td></tr>

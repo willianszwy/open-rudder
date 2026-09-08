@@ -6,7 +6,7 @@
 <rect x="29.32" y="47.10" width="22.86" height="17.78" rx="1" fill="#7c5cd6" fill-opacity=".10" stroke="#7c5cd6" stroke-width=".35"/>
 <text x="40.75" y="56.89" text-anchor="middle" font-size="2.1" fill="#7c5cd6" font-weight="700" paint-order="stroke" stroke="#f7f2e4" stroke-width="1.1" stroke-linejoin="round">TCA9548A</text>
 <rect x="57.26" y="47.10" width="15.24" height="17.78" rx="1" fill="#c2410c" fill-opacity=".10" stroke="#c2410c" stroke-width=".35"/>
-<text x="64.88" y="56.89" text-anchor="middle" font-size="2.1" fill="#c2410c" font-weight="700" paint-order="stroke" stroke="#f7f2e4" stroke-width="1.1" stroke-linejoin="round">AMS1117 (se precisar)</text>
+<text x="64.88" y="56.89" text-anchor="middle" font-size="2.1" fill="#c2410c" font-weight="700" paint-order="stroke" stroke="#f7f2e4" stroke-width="1.1" stroke-linejoin="round">AMS1117 (só p/ AS5600 3V3)</text>
 <rect x="19.16" y="69.96" width="15.24" height="12.70" rx="1" fill="#159a6b" fill-opacity=".10" stroke="#159a6b" stroke-width=".35"/>
 <text x="26.78" y="77.21" text-anchor="middle" font-size="2.1" fill="#159a6b" font-weight="700" paint-order="stroke" stroke="#f7f2e4" stroke-width="1.1" stroke-linejoin="round">LEME</text>
 <rect x="36.94" y="69.96" width="15.24" height="12.70" rx="1" fill="#159a6b" fill-opacity=".10" stroke="#159a6b" stroke-width=".35"/>
@@ -16,7 +16,7 @@
 <line x1="12.81" y1="10.27" x2="12.81" y2="86.47" stroke="#334155" stroke-width="1.1" stroke-linecap="round"/>
 <text x="12.81" y="91.87" text-anchor="middle" font-size="2.2" fill="#334155" font-weight="700">GND</text>
 <line x1="17.89" y1="10.27" x2="17.89" y2="86.47" stroke="#d64545" stroke-width="1.1" stroke-linecap="round"/>
-<text x="17.89" y="91.87" text-anchor="middle" font-size="2.2" fill="#d64545" font-weight="700">3V3</text>
+<text x="17.89" y="91.87" text-anchor="middle" font-size="2.2" fill="#d64545" font-weight="700">VCC</text>
 <circle cx="10.27" cy="10.27" r=".42" fill="none" stroke="#9a8e70" stroke-width=".18"/>
 <circle cx="12.81" cy="10.27" r=".42" fill="none" stroke="#9a8e70" stroke-width=".18"/>
 <circle cx="15.35" cy="10.27" r=".42" fill="none" stroke="#9a8e70" stroke-width=".18"/>

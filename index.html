@@ -103,7 +103,8 @@
 <p class="caption">
   O endereço I²C do AS5600 é fixo em 0x36 e não é programável, então os três sensores não
   coexistem no mesmo barramento — daí o TCA9548A, que isola cada um em seu canal.
-  <b style="color:var(--warn)">O AS5600 é 3,3 V:</b> nada do barramento pode ver 5 V.
+  O AS5600 aceita 5 V (pino VDD5V, LDO interno) ou 3,3 V (VDD3V3) — com módulos de 5 V,
+  o barramento roda direto no VCC do Pro Micro.
   Notas completas nas <a href="hardware/diagrama.html">folhas de montagem</a>.
 </p>
 
