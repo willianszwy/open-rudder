@@ -11,10 +11,15 @@
  *   Pro Micro          TCA9548A            sensores
  *     SDA (2) --------- SDA    SD0/SC0 ---- AS5600 leme
  *     SCL (3) --------- SCL    SD1/SC1 ---- AS5600 freio esquerdo
- *     3.3V   --------- VIN    SD2/SC2 ---- AS5600 freio direito
+ *     VCC    --------- VIN    SD2/SC2 ---- AS5600 freio direito
  *     GND    --------- GND
  *                      A0,A1,A2 -> GND  (endereco 0x70)
- *   Cada AS5600: VCC 3.3V, GND, DIR em GND.
+ *   Cada AS5600: VCC 5V, GND, DIR em GND.
+ *
+ * TENSAO: tudo em 5V, sem regulador. O AS5600 tem dois modos - VDD5V (4,5 a
+ * 5,5V, com LDO interno) ou VDD3V3 (3,0 a 3,6V); com modulos da variante 5V o
+ * barramento inteiro roda no VCC do Pro Micro e o TCA9548A aceita ate 5,5V.
+ * Em modulos da variante 3,3V os 5V queimam o sensor.
  *
  * Sem o mux ligado o firmware cai automaticamente para o modo de 1 sensor
  * (so o leme, AS5600 direto no barramento) - da para montar por partes.
@@ -529,10 +534,22 @@ void pumpSerial() {
 void setup() {
   Serial.begin(115200);
 
+  // Da tempo do mux e dos sensores sairem do proprio power-on antes de falar
+  // com eles. Num plug a frio tudo energiza junto; sem esta folga o primeiro
+  // acesso I2C pega o barramento num estado indefinido.
+  delay(50);
+
   Wire.begin();
-  digitalWrite(SDA, LOW);   // desliga pull-ups internos de 5V (AS5600 e 3.3V)
-  digitalWrite(SCL, LOW);
+  // Pull-ups internos ficam LIGADOS: o barramento e todo 5V, e sem eles a lib
+  // Wire trava com o barramento vazio (placa some da USB, LEDs acesos).
   Wire.setClock(I2C_CLOCK);
+
+  // Sem isto a lib Wire espera o barramento liberar SEM LIMITE: um sensor
+  // arrancado no meio de uma transacao segura o SDA em nivel baixo e o loop
+  // principal morre junto com a USB. Com timeout o eixo vira "erro I2C"
+  // (status 4) e o resto continua. Importa em uso real: os chicotes das
+  // biqueiras flexionam, e um mau contato nao pode derrubar o pedal inteiro.
+  Wire.setWireTimeout(3000, true);   // 3 ms, com reset do TWI ao estourar
 
   muxPresent = probe(MUX_ADDR);
 

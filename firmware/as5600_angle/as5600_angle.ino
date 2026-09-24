@@ -4,17 +4,15 @@
  * Ligacao (Pro Micro):
  *   AS5600 SDA -> pino 2  (D2 / SDA)
  *   AS5600 SCL -> pino 3  (D3 / SCL)
- *   AS5600 VCC -> 3.3V    (ver nota abaixo)
+ *   AS5600 VCC -> VCC     (5V - ver nota abaixo)
  *   AS5600 GND -> GND
  *   AS5600 DIR -> GND     (sentido horario = angulo crescente)
  *
- * ATENCAO tensao: o AS5600 e um chip 3.3V. O Pro Micro de 5V/16MHz tem I2C
- * em 5V. A maioria dos breakouts vermelhos do AS5600 nao tem level shifter,
- * apenas pull-ups para o VCC do proprio modulo. Alimentando o modulo em 3.3V
- * (pino RAW/VCC do regulador do Pro Micro nao serve - use o pino 3.3V se for
- * a versao 3.3V/8MHz, ou um regulador externo) o barramento fica em 3.3V e o
- * Pro Micro de 5V ainda le HIGH (limiar ~3.0V). Funciona na pratica, mas o
- * ideal e usar Pro Micro 3.3V/8MHz ou um conversor de nivel I2C.
+ * TENSAO: tudo em 5V, sem regulador e sem conversor de nivel. O AS5600 tem
+ * dois modos de alimentacao - VDD5V (4,5 a 5,5V, com LDO interno) ou VDD3V3
+ * (3,0 a 3,6V). Com modulos da variante 5V o barramento inteiro roda no VCC
+ * do Pro Micro. Confirme qual e o seu antes de ligar: num modulo 3,3V os 5V
+ * passam do limite e queimam o sensor.
  *
  * Ima: diametral (magnetizado de lado a lado), 6x2.5mm ou 6x3mm,
  * centrado no eixo, a ~0.5-3mm da face marcada do chip.
@@ -121,11 +119,11 @@ void setup() {
   while (!Serial && millis() < 3000) { /* Pro Micro: espera USB, com timeout */ }
 
   Wire.begin();
-  // A lib Wire do AVR liga os pull-ups internos em VCC (5V no Pro Micro 5V),
-  // o que puxaria o barramento acima do limite do AS5600. Desliga os internos
-  // e usa apenas os pull-ups do modulo (que vao para o 3.3V dele).
-  digitalWrite(SDA, LOW);
-  digitalWrite(SCL, LOW);
+  // Pull-ups internos do ATmega32U4 ficam LIGADOS (padrao do Wire.begin).
+  // O barramento todo e 5V, entao eles nao agridem o AS5600 e ainda mantem
+  // SDA/SCL definidos quando nenhum sensor esta ligado. Sem eles a lib Wire
+  // do AVR trava esperando um nivel alto que nunca chega, e a placa some da
+  // USB com os LEDs acesos.
 
   Wire.setClock(400000);   // fast mode; use 100000 se o cabo for longo
 
