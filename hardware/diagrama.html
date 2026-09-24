@@ -38,6 +38,9 @@
      tamanho físico real (84,04 × 96,74 mm) e vira gabarito 1:1. */
   img.board { display: block; width: 760px; max-width: 100%; height: auto; }
 
+  /* A placa de tiras é esquemática, não gabarito: largura só de leitura. */
+  img.strip { display: block; width: 1020px; max-width: 100%; height: auto; }
+
   @media print {
     body { background: #fff; padding: 0; }
     .sheet { border: none; box-shadow: none; max-width: none; page-break-after: always; }
@@ -111,6 +114,54 @@
       O layout é gerado por <code>gerar_perfurada.py</code> — mexa nos blocos lá e rode o script,
       não edite o SVG na mão. A grade assume 26×31 furos; com outra contagem os blocos deslizam
       à vontade e a netlist do diagrama acima não muda.
+    </p>
+  </div>
+</div>
+
+<div class="sheet">
+  <h1>Open Rudder <span>— layout na placa de tiras</span></h1>
+  <p class="sub">
+    Alternativa à folha acima, para placa <b>estilo protoboard</b>: linhas horizontais de 5 furos
+    separadas por dois trilhos verticais centrais. Os trilhos viram <b>GND (F)</b> e <b>VCC (G)</b>,
+    e os conectores montam a cavalo — os dois pinos do meio caem direto na alimentação.
+    <b>Desenho esquemático, não 1:1:</b> localize tudo pelas linhas numeradas da placa.
+  </p>
+
+  <img class="strip" src="tiras.svg" alt="Layout na placa de tiras: Pro Micro e TCA9548A a cavalo sobre os trilhos centrais de GND e VCC">
+
+  <div class="notes">
+    <b>O que muda em relação à placa lisa</b>
+    <ol>
+      <li><b>A pinagem do chicote passa a ser <code>SDA · GND · VCC · SCL</code></b> — energia no meio.
+        É o que faz os dois pinos centrais do JST caírem nos trilhos sem jumper nenhum. A tabela da
+        folha seguinte ainda está na ordem antiga; só vale uma das duas.</li>
+      <li><b>Não existe mais barramento de fio rígido</b> para soldar: os trilhos já são de fábrica.
+        Confira só se eles são contínuos de ponta a ponta — em algumas placas vêm partidos no meio,
+        e aí precisa de um jumper unindo as metades.</li>
+      <li><b>Encaixe a seco o Pro Micro e o mux antes de soldar.</b> Nenhuma perna pode cair nas
+        colunas F ou G: pino no trilho é curto de VCC em GND direto pela USB.</li>
+      <li><b>Jumpers de força são de um furo só:</b> GND sai pela metade esquerda (linhas 5 e 20),
+        VCC pela direita (linha 6), e A0/A1/A2 vão ao GND nas linhas 24–26. O único que pula um
+        trilho é o VIN do mux, na linha 19.</li>
+      <li><b>O HW-617 é assimétrico:</b> os canais 0 e 1 saem do mesmo lado dos pinos de controle;
+        o canal 2 sai do lado oposto, que corre de baixo para cima (SD2/SC2 embaixo, SC7 no topo).
+        Por isso um fio por sensor cruza os trilhos — o SCL nos canais 0 e 1, o SDA no canal 2.</li>
+      <li>Os pinos <code>SD3…SC7</code> ficam enfiados em tiras que não usamos. Deixe essas linhas livres.</li>
+      <li>O <b>RST do mux</b> costuma ter pull-up no próprio módulo. Se o seu não tiver, jumper de RST para VCC.</li>
+      <li><b>Capacitores: são dois</b>, nas linhas 15 e 16, cada um na sua linha e os dois atravessando
+        F e G — os trilhos já os põem em paralelo. Os 100 nF dos sensores são à parte, um em cada
+        AS5600, como mostra o diagrama de ligação.
+        O <b>100 nF</b> daqui é cerâmico (MLCC X7R, 50 V). O <b>10 µF</b> de bulk
+        tanto faz — eletrolítico de alumínio 25 V dá e sobra para os ~80 mA deste circuito; sólido
+        (polímero) só paga uma margem que aqui não se usa. Se for eletrolítico, atenção: os dois
+        trilhos ficam colados, então a <b>tarja (−) vai em F = GND</b> e o positivo em G. Um cerâmico
+        de 10 µF X7R/X5R 25 V elimina esse risco — não tem lado.</li>
+    </ol>
+    <p style="margin-top:10px;color:var(--sub);font-size:12px">
+      Gerado por <code>gerar_tiras.py</code> — mexa nas constantes do topo e rode o script, não
+      edite o SVG na mão. A grade assumida é 12 colunas × 40 linhas com tiras de 5 furos; com
+      outra contagem, ajuste <code>COLS</code>/<code>ROWS</code> e os blocos deslizam junto.
+      A netlist do diagrama de ligação não muda.
     </p>
   </div>
 </div>
