@@ -23,7 +23,10 @@ COLS, ROWS = 12, 40        # A..L  x  1..40
 PITCH = 7.0                # passo de desenho, nao de fabricacao
 ML, MT, MB = 16, 24, 26    # margens: reguas e rotulos dos trilhos
 PAD = 6                    # folga do painel da placa
-LEG_W = 196                # coluna da legenda
+# A legenda carrega as justificativas do layout — serve na bancada, atrapalha
+# numa página de produto. Com LEGENDA = False sai só o desenho da placa.
+LEGENDA = True
+LEG_W = 196 if LEGENDA else 10   # coluna da legenda
 
 # colunas (0-based): A-E = tira esquerda, F = GND, G = VCC, H-L = tira direita
 STRIP_L = (0, 4)
@@ -248,6 +251,10 @@ def build() -> str:
         p.append(txt(cx(col), base + dy, nome, 4.2, fill=cor, weight="700", halo=False))
 
     # ------------------------------------------------------------------ legenda
+    if not LEGENDA:
+        p.append("</svg>")
+        return chr(10).join(p)
+
     lx = ML + COLS * PITCH + PAD + 16
     y = MT - 8
     p.append(txt(lx, y, "Open Rudder", 11, anchor="start", fill=TINTA,
@@ -337,7 +344,13 @@ def build() -> str:
 
 
 if __name__ == "__main__":
-    destino = Path(__file__).parent / "tiras.svg"
-    destino.write_text(build(), encoding="utf-8")
-    print(f"{destino}  ({destino.stat().st_size / 1024:.1f} kB, "
-          f"{COLS}x{ROWS} furos, {W:.0f}x{H:.0f})")
+    base = Path(__file__).parent
+    for legenda, nome in ((True, "tiras.svg"), (False, "tiras-limpo.svg")):
+        LEGENDA = legenda
+        globals()["LEGENDA"] = legenda
+        globals()["LEG_W"] = 196 if legenda else 10
+        globals()["W"] = ML + COLS * PITCH + PAD + globals()["LEG_W"]
+        destino = base / nome
+        destino.write_text(build(), encoding="utf-8")
+        print(f"{destino}  ({destino.stat().st_size / 1024:.1f} kB, "
+              f"{globals()['W']:.0f}x{H:.0f})")
