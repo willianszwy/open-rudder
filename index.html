@@ -40,6 +40,13 @@
   .card .req { margin-top: 12px; font-size: 12px; font-family: var(--mono); color: var(--dim); }
   .card .req b { color: var(--warn); font-weight: 600; }
 
+  .hero { margin: 26px 0 4px; }
+  .hero img, .galeria img {
+    display: block; width: 100%; height: auto;
+    border-radius: 12px; border: 1px solid var(--line);
+  }
+  .galeria { display: grid; gap: 16px; }
+
   .sheet { background: #fff; border-radius: 11px; padding: 18px; border: 1px solid var(--line); }
   .sheet img { display: block; width: 100%; height: auto; }
   /* desenho estreito e alto: limita a largura e centra */
@@ -87,6 +94,11 @@
   </p>
   <p class="repo">→ <a href="https://github.com/willianszwy/open-rudder">github.com/willianszwy/open-rudder</a></p>
 </header>
+
+<div class="hero">
+  <img src="fotos/pedal-frente.jpg" width="1600" height="740"
+       alt="Open Rudder montado, visto de frente: dois pedais, coluna central de perfil 2020 e a caixa da eletrônica no topo">
+</div>
 
 <div class="cards">
   <a class="card" href="web/calibrador.html">
@@ -215,6 +227,18 @@
   <li><b>Freios:</b> mire 10–15° de curso no pivô da biqueira. Abaixo de ~5° a dosagem fica granulada.</li>
   <li><b>Leme:</b> para ±17° são ~380 counts de curso útil — equivalente a um potenciômetro de 9 bits.</li>
 </ul>
+
+<h2>O pedal montado</h2>
+<div class="galeria">
+  <img src="fotos/pedal-cima.jpg" width="1200" height="900" loading="lazy"
+       alt="Vista de cima: braços dos pedais, molas de retorno, amortecedor e a caixa da eletrônica presa ao perfil">
+  <img src="fotos/pedal-lado.jpg" width="1200" height="1100" loading="lazy"
+       alt="Vista lateral: a caixa da eletrônica no perfil vertical, com os chicotes saindo pela tampa e o USB-C na ponta">
+</div>
+<p class="caption">
+  A caixa da eletrônica monta no perfil 2020 vertical. Os chicotes saem pela tampa com laço de folga,
+  o USB-C fica acessível na ponta e o interruptor de reset no topo — sem precisar abrir nada.
+</p>
 
 <h2>Firmware</h2>
 <p>Precisa da biblioteca <a href="https://github.com/MHeironimus/ArduinoJoystickLibrary">Joystick</a> (2.1.1+). Placa: Arduino Micro / Leonardo.</p>
